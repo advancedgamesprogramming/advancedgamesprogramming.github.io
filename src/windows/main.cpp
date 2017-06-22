@@ -79,13 +79,17 @@
 #pragma comment(lib, "sl.lib")
 
 
-
+#include <config.h>
 
 #ifdef WIN32
 #include <windows.h>
 #include <stdlib.h>
 #endif
-#include <GL/glut.h>
+
+#if HAVE_GL
+	#include <GL/glut.h>
+#endif
+
 #include <tgfclient.h>
 #include <client.h>
 #include <portability.h>

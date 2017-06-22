@@ -52,6 +52,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <config.h>
 
 #include <math.h>
 #include <stdlib.h>
@@ -61,7 +62,11 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
-#include <GL/glut.h>
+
+#if HAVE_GL
+	#include <GL/glut.h>
+#endif
+
 #include <plib/ssg.h>
 
 #include <tgfclient.h>

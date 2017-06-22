@@ -53,6 +53,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <config.h>
 
 #include <math.h>
 #include <stdlib.h>
@@ -61,10 +62,17 @@
 #include <ctype.h>
 #ifdef WIN32
 #include <windows.h>
-#include <GL/gl.h>
-#include <GL/glext.h>
+
+#if HAVE_GL
+	#include <GL/gl.h>
+	#include <GL/glext.h>
 #endif
-#include <GL/glut.h>
+#endif// WIN32
+
+#if HAVE_GL
+	#include <GL/glut.h>
+#endif
+
 #include <plib/ssg.h>
 #include <plib/ssgAux.h>
 #include <tgfclient.h>

@@ -59,6 +59,8 @@
     @version	$Id: relief.cpp,v 1.6.2.1 2008/11/09 17:50:23 berniw Exp $
 */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -69,7 +71,11 @@
 #endif
 #include <math.h>
 #include <plib/ssg.h>
-#include <GL/glut.h>
+
+#if HAVE_GL
+	#include <GL/glut.h>
+#endif
+
 
 #include <tgfclient.h>
 #include <track.h>

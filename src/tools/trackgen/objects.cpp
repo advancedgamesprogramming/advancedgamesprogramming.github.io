@@ -59,6 +59,7 @@
     @version	$Id: objects.cpp,v 1.5.2.7 2012/07/13 15:27:31 berniw Exp $
 */
 
+#include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -68,7 +69,11 @@
 #endif
 #include <math.h>
 #include <plib/ssg.h>
-#include <GL/glut.h>
+
+#if HAVE_GL
+	#include <GL/glut.h>
+#endif
+
 
 #include <tgfclient.h>
 #include <track.h>

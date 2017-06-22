@@ -63,8 +63,14 @@
 #ifndef __TGFCLIENT__H__
 #define __TGFCLIENT__H__
 
+#include <config.h>
+
 #include <tgf.h>
-#include <GL/glut.h>
+
+#if HAVE_GL
+	#include <GL/glut.h>
+#endif
+
 #include <plib/js.h>
 #include <screen_properties.h>
 

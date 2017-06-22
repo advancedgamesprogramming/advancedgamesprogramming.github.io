@@ -52,11 +52,18 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+#include <config.h>
+
 #ifdef WIN32
 #include <windows.h>
 #define HAVE_CONFIG_H
 #endif
-#include <GL/glut.h>
+
+#if HAVE_GL
+	#include <GL/glut.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <portability.h>

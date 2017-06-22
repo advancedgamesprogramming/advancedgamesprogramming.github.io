@@ -63,11 +63,16 @@
 #ifndef _GRTRACKMAP_H_
 #define _GRTRACKMAP_H_
 
+#include <config.h>
+
 #include <car.h>
 #include <raceman.h>
-#include <GL/gl.h>
-#include <GL/glut.h>
-#include <GL/glu.h>
+
+#if HAVE_GL
+	#include <GL/gl.h>
+	#include <GL/glut.h>
+	#include <GL/glu.h>
+#endif
 
 #ifndef WIN32
 #include <unistd.h>

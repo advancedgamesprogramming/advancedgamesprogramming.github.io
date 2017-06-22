@@ -58,6 +58,9 @@
     @author	<a href=mailto:torcs@free.fr>Eric Espie</a>
     @version	$Id: maintrackgen.cpp,v 1.5.2.7 2012/09/05 16:40:45 berniw Exp $
 */
+
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -73,7 +76,10 @@
 #include <math.h>
 #include <plib/ul.h>
 #include <plib/ssg.h>
-#include <GL/glut.h>
+
+#if HAVE_GL
+	#include <GL/glut.h>
+#endif
 
 #include <tgfclient.h>
 #include <track.h>

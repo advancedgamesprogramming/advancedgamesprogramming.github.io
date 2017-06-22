@@ -59,13 +59,17 @@
     @ingroup	gui
 */
 
+#include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef WIN32
 #include <windows.h>
 #endif
-#include <GL/glut.h>
+
+#if HAVE_GL
+	#include <GL/glut.h>
+#endif
 
 #include <tgfclient.h>
 #include "gui.h"

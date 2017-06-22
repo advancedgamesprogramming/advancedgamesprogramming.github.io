@@ -59,11 +59,17 @@
     @ingroup	screen
 */
 
+#include <config.h>
+
 #include <stdio.h>
 #ifdef WIN32
 #include <windows.h>
 #endif
-#include <GL/glut.h>
+
+#if HAVE_GL
+	#include <GL/glut.h>
+#endif
+
 #include <math.h>
 #ifndef WIN32
 #include <unistd.h>

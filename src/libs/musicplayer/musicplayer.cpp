@@ -53,9 +53,14 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <config.h>
+
 #include "musicplayer.h"
 
-#include <GL/glut.h>
+#if HAVE_GL
+	#include <GL/glut.h>
+#endif
+
 #include <string.h>
 #include <tgf.h>
 #include <portability.h>
