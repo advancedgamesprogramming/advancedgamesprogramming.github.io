@@ -70,7 +70,7 @@ typedef tFList *(*tfDirGetListFiltered)(const char *, const char *);
 /* time interface */
 typedef double (*tfTimeClock)(void);
 
-typedef struct {
+struct tGfOs  {
    // tfModLoad			modLoad;
     tfModLoadDir		modLoadDir;
     tfModUnloadList		modUnloadList;
@@ -80,15 +80,15 @@ typedef struct {
     tfDirGetList		dirGetList;
     tfDirGetListFiltered	dirGetListFiltered;
     tfTimeClock			timeClock;
-} tGfOs;
+} ;
 
-#ifdef WIN32
-#ifdef TGF_EXPORTS
-__declspec(dllexport)
-#else // TGF_EXPORTS
-__declspec(dllimport)
-#endif // TGF_EXPORTS
-#endif // WIN32
+//#ifdef WIN32
+//#ifdef TGF_EXPORTS
+//__declspec(dllexport)
+//#else // TGF_EXPORTS
+//__declspec(dllimport)
+//#endif // TGF_EXPORTS
+//#endif // WIN32
 extern tGfOs GfOs;
 
 #endif /* _OS__H_ */

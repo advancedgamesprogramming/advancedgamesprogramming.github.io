@@ -55,6 +55,8 @@
 
 /* Concrete implementation for ogg sound streams */
 
+#include <config.h>
+
 #include "OggSoundStream.h"
 #include <tgf.h>
 
@@ -66,13 +68,18 @@ OggSoundStream::OggSoundStream(char* path):
 {
 	int result;
  
+#if HAVE_OGG
 	if((result = ov_fopen(path, &oggStream)) < 0) {
 		GfError("OggSoundStream: Could not open Ogg stream: %s\n", errorString(result));
 		return;
 	}
+#else
+	return;
+#endif
 	
 	// fclose is not required here, the vorbis lib will take care of this on ov_clear.
 		
+#if HAVE_OGG
 	vorbis_info* vorbisInfo = ov_info(&oggStream, -1);
 	rateInHz = vorbisInfo->rate;
 
@@ -81,6 +88,7 @@ OggSoundStream::OggSoundStream(char* path):
 	} else {
         format = FORMAT_STEREO16;
 	}
+#endif
 
 	valid = true;
 }
@@ -90,9 +98,11 @@ OggSoundStream::OggSoundStream(char* path):
 
 OggSoundStream::~OggSoundStream()
 {
+#if HAVE_OGG
 	if (isValid()) {
 		ov_clear(&oggStream);
 	}
+#endif
 }
 
 
@@ -100,6 +110,7 @@ OggSoundStream::~OggSoundStream()
 
 bool OggSoundStream::read(char* buffer, const int bufferSize, int* resultSize, const char** error)
 {
+#if HAVE_OGG
 	if (!isValid()) {
 		*error = "OggSoundStream: Invalid, no data available.";
 		return false;
@@ -128,7 +139,7 @@ bool OggSoundStream::read(char* buffer, const int bufferSize, int* resultSize, c
 		*error = "OggSoundStream: Read 0 bytes.";
 		return false;
 	}
-	
+#endif
 	return true;
 }
 
@@ -137,12 +148,14 @@ bool OggSoundStream::read(char* buffer, const int bufferSize, int* resultSize, c
 
 void OggSoundStream::rewind()
 {
+#if HAVE_OGG
 	if (!isValid()) {
 		GfError("OggSoundStream: Invalid, no info available.\n");
 		return;
 	}
 
 	ov_time_seek(&oggStream, 0);
+#endif
 }
 
 
@@ -150,6 +163,7 @@ void OggSoundStream::rewind()
 
 void OggSoundStream::display()
 {
+#if HAVE_OGG
 	if (!isValid()) {
 		GfError("OggSoundStream: Invalid, no info available.\n");
 		return;
@@ -171,6 +185,7 @@ void OggSoundStream::display()
     for(i = 0; i < vorbisComment->comments; i++) {
         GfOut("                %s\n", vorbisComment->user_comments[i]);
 	}
+#endif
 }
 
 
@@ -178,6 +193,7 @@ void OggSoundStream::display()
 
 const char* OggSoundStream::errorString(int code)
 {
+#if HAVE_OGG
     switch(code)
     {
         case OV_EREAD:
@@ -193,4 +209,7 @@ const char* OggSoundStream::errorString(int code)
         default:
             return "OggSoundStream: Unknown Ogg error.";
     }
+#else
+	return 0;
+#endif
 }

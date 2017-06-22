@@ -53,6 +53,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <config.h>
+
 #include "SoundInterface.h"
 #include "CarSoundData.h"
 #include "TorcsSound.h"
@@ -67,7 +69,10 @@ const int OpenalSoundInterface::OSI_MIN_DYNAMIC_SOURCES = 4;
 
 OpenalSoundInterface::OpenalSoundInterface(float sampling_rate, int n_channels): SoundInterface (sampling_rate, n_channels)
 {
+
 	car_src = NULL;
+
+#if HAVE_AL
 
 	ALfloat far_away[] = { 0.0f, 0.0f,  1000.0f };
 	ALfloat zeroes[] = { 0.0f, 0.0f,  0.0f };
@@ -140,10 +145,12 @@ OpenalSoundInterface::OpenalSoundInterface(float sampling_rate, int n_channels):
 
 	OSI_MAX_BUFFERS = buffers;
 
+#if HAVE_AL
 	printf("OpenAL backend info:\n  Vendor: %s\n  Renderer: %s\n  Version: %s\n", alGetString(AL_VENDOR), alGetString(AL_RENDERER), alGetString(AL_VERSION));
 	printf("  Available sources: %d%s\n", OSI_MAX_SOURCES, (sources >= MAX_SOURCES) ? " or more" : "");
 	printf("  Available buffers: %d%s\n", OSI_MAX_BUFFERS, (buffers >= MAX_SOURCES) ? " or more" : "");
-	
+#endif
+
 	alDistanceModel ( AL_INVERSE_DISTANCE );
 	int error = alGetError();
 	if (error != AL_NO_ERROR) {
@@ -180,10 +187,12 @@ OpenalSoundInterface::OpenalSoundInterface(float sampling_rate, int n_channels):
 	axle.schar = &CarSoundData::axle;
 
 	n_static_sources_in_use = 0;
+#endif
 }
 
 OpenalSoundInterface::~OpenalSoundInterface()
 {
+#if HAVE_AL
 	delete sourcepool;
 	for (unsigned int i=0; i<sound_list.size(); i++) {
 		delete sound_list[i];
@@ -195,6 +204,7 @@ OpenalSoundInterface::~OpenalSoundInterface()
 	if (car_src) {
 		delete [] car_src;
 	}
+#endif
 }
 
 void OpenalSoundInterface::setNCars(int n_cars)
@@ -206,14 +216,18 @@ void OpenalSoundInterface::setNCars(int n_cars)
 
 TorcsSound* OpenalSoundInterface::addSample (const char* filename, int flags, bool loop, bool static_pool)
 {
+#if HAVE_AL
 	TorcsSound* sound = new OpenalTorcsSound (filename, this, flags, loop, static_pool);
 	sound_list.push_back (sound);
 	return sound;
+#else
+	return 0;
+#endif
 }
 	
 void OpenalSoundInterface::update(CarSoundData** car_sound_data, int n_cars, sgVec3 p_obs, sgVec3 u_obs, sgVec3 c_obs, sgVec3 a_obs)
 {
-	
+#if HAVE_AL
 	ALfloat listener_pos[3];
 	//ALfloat listener_speed[3];
 	ALfloat listener_orientation[6];
@@ -399,26 +413,32 @@ void OpenalSoundInterface::update(CarSoundData** car_sound_data, int n_cars, sgV
 			gear_change_sound->start();
 		}
 	}
+#endif
 }
 
 
 void OpenalSoundInterface::muteForMenu()
 {
+#if HAVE_AL
 	alListenerf(AL_GAIN, 0.0f);
+#endif
 }
 
 
 void OpenalSoundInterface::initSharedSourcePool(void)
 {
+#if HAVE_AL
 	int nbdynsources = OSI_MAX_SOURCES - n_static_sources_in_use;
 	sourcepool = new SharedSourcePool(nbdynsources);
 	printf("  #static sources: %d\n", n_static_sources_in_use);
 	printf("  #dyn sources   : %d\n", sourcepool->getNbSources());
+#endif
 }
 
 
 bool OpenalSoundInterface::getStaticSource(ALuint *source)
 {
+#if HAVE_AL
 	// Do we have a source left for static assigned sources?
 	if (n_static_sources_in_use < OSI_MAX_STATIC_SOURCES - 1) {
 		alGenSources (1, source);
@@ -432,10 +452,14 @@ bool OpenalSoundInterface::getStaticSource(ALuint *source)
 	} else {
 		return false;
 	}
+#else
+	return false;
+#endif
 }
 
 void OpenalSoundInterface::SetMaxSoundCar(CarSoundData** car_sound_data, QueueSoundMap* smap)
 {
+#if HAVE_AL
 	int id = smap->id;
 	float max_vol = smap->max_vol;
 	QSoundChar CarSoundData::*p2schar = smap->schar;
@@ -462,4 +486,5 @@ void OpenalSoundInterface::SetMaxSoundCar(CarSoundData** car_sound_data, QueueSo
 	} else {
 		snd->stop();
 	}
+#endif
 }

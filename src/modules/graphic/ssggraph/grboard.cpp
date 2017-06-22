@@ -80,7 +80,7 @@ static float grRed[4] = {1.0, 0.0, 0.0, 1.0};
 static float grBlue[4] = {0.0, 0.0, 1.0, 1.0};
 static float grGreen[4] = {0.0, 1.0, 0.0, 1.0};
 static float grBlack[4] = {0.0, 0.0, 0.0, 1.0};
-static float grDefaultClr[4] = {0.9, 0.9, 0.15, 1.0};
+static float grDefaultClr[4] = {0.9f, 0.9f, 0.15f, 1.0f};
 
 #define NB_BOARDS	3
 #define NB_LBOARDS	3
@@ -554,13 +554,13 @@ grDispEngineLeds (tCarElt *car, int X, int Y, int align, int bg)
 	int  x, y;
 	int  xref;
 	GLfloat ledcolg[2][3] = { 
-		{0.0, 0.2, 0.0},
-		{0.0, 1.0, 0.0}
+		{0.0f, 0.2f, 0.0f},
+		{0.0f, 1.0f, 0.0f}
 	};
 
 	GLfloat ledcolr[2][3] = { 
-		{0.2, 0.0, 0.0},
-		{1.0, 0.0, 0.0}
+		{0.2f, 0.0f, 0.0f},
+		{1.0f, 0.0f, 0.0f}
 	};
 
 	int i;

@@ -40,6 +40,10 @@
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
+#define HAVE_OGG 0
+
+#define HAVE_AL 0
+
 #define HAVE_GL 1
 
 #if !(HAVE_GL)

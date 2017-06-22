@@ -74,7 +74,7 @@
 
 
 
-const tdble DEGPRAD = 180.0 / PI;   /* degrees per radian */
+const tdble DEGPRAD = 180.0f / PI;   /* degrees per radian */
 
 static tTrack	*theTrack = NULL;
 static tRoadCam *theCamList;

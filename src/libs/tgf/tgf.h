@@ -103,7 +103,7 @@ extern void GfInit(void);
 
 #define freez FREEZ
 
-const double PI = 3.14159265358979323846;  /**< PI */
+const float PI = 3.14159265358979323846f;  /**< PI */
 const tdble G = 9.80665f; /**< m/s/s */
 
 /* conversion */

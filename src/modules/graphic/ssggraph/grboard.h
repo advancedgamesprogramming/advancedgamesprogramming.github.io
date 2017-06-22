@@ -96,8 +96,8 @@ class cGrBoard
     void initBoard(void);
     void shutdown(void);
     void selectBoard(int brd);
-    void dispGaph(tCarElt *car);
-    void initBoardCar(tCarElt *car);
+	void dispGaph(tCarElt *car) {};
+	void initBoardCar(tCarElt *car) {};
 	cGrTrackMap *getTrackMap() { return trackMap; }
 
     void refreshBoard(tSituation *s, float Fps, int forceArcade, tCarElt *curr);

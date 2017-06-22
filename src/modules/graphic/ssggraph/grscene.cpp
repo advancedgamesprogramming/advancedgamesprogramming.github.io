@@ -139,12 +139,12 @@ grInitScene(void)
 	void *hndl = grTrackHandle;
 	ssgLight *light = ssgGetLight(0);
 
-	GLfloat mat_specular[]   = {0.3, 0.3, 0.3, 1.0};
-	GLfloat mat_shininess[]  = {50.0};
-	GLfloat light_position[] = {0, 0, 200, 0.0};
-	GLfloat lmodel_ambient[] = {0.2, 0.2, 0.2, 1.0};
-	GLfloat lmodel_diffuse[] = {0.8, 0.8, 0.8, 1.0};
-	GLfloat fog_clr[]        = {1.0, 1.0, 1.0, 0.5};
+	GLfloat mat_specular[]   = {0.3f, 0.3f, 0.3f, 1.0f};
+	GLfloat mat_shininess[]  = {50.0f};
+	GLfloat light_position[] = {0, 0, 200, 0.0f};
+	GLfloat lmodel_ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
+	GLfloat lmodel_diffuse[] = {0.8f, 0.8f, 0.8f, 1.0f};
+	GLfloat fog_clr[]        = {1.0f, 1.0f, 1.0f, 0.5f};
 
 	mat_specular[0] = GfParmGetNum(hndl, TRK_SECT_GRAPH, TRK_ATT_SPEC_R, NULL, mat_specular[0]);
 	mat_specular[1] = GfParmGetNum(hndl, TRK_SECT_GRAPH, TRK_ATT_SPEC_G, NULL, mat_specular[1]);

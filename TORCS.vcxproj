@@ -151,14 +151,6 @@
       <Project>{61eb09c8-4d12-45f9-9e5e-9be0efb71de0}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="src\tools\nfsperf\nfsperf.vcxproj">
-      <Project>{cc3b1be2-1345-4071-bc3b-4c10ed1b1186}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="src\tools\trackgen\trackgen.vcxproj">
-      <Project>{1c6a1700-1242-4b39-92c2-b6f352d5a760}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="src\windows\wtorcs.vcxproj">
       <Project>{31ca578b-13ca-4640-8d1a-95ed57c026a2}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

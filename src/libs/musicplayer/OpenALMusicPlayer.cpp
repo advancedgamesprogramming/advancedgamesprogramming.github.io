@@ -53,6 +53,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <config.h>
+
 #include <stdio.h>
 #include <tgf.h>
 #include "OpenALMusicPlayer.h"
@@ -89,6 +91,7 @@ void OpenALMusicPlayer::stop()
 		return;
 	}
 	
+#if HAVE_AL
 	alSourceStop(source);
     
 	int queued;
@@ -108,7 +111,7 @@ void OpenALMusicPlayer::stop()
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(context);
 	alcCloseDevice(device);
-	
+#endif
 	ready = false;
 }
 
@@ -117,6 +120,7 @@ void OpenALMusicPlayer::stop()
 
 bool OpenALMusicPlayer::initContext()
 {
+#if HAVE_AL
 	device = alcOpenDevice(NULL);
 	if( device == NULL ) {
 		GfError("OpenALMusicPlayer: OpenAL could not open device\n");
@@ -132,8 +136,9 @@ bool OpenALMusicPlayer::initContext()
 
 	alcMakeContextCurrent(context);
 	alcGetError(device);
-	
+#endif	
 	return check();
+
 }
 
 
@@ -141,7 +146,9 @@ bool OpenALMusicPlayer::initContext()
 
 bool OpenALMusicPlayer::initBuffers()
 {
+#if HAVE_AL
 	alGenBuffers(2, buffers);
+#endif
 	return check();
 }
 
@@ -150,6 +157,7 @@ bool OpenALMusicPlayer::initBuffers()
 
 bool OpenALMusicPlayer::initSource()
 {
+#if HAVE_AL
     alGenSources(1, &source);
     if (!check()) {
 		GfError("OpenALMusicPlayer: initSource failed to get sound source.\n");
@@ -161,7 +169,7 @@ bool OpenALMusicPlayer::initSource()
     alSource3f(source, AL_DIRECTION,       0.0, 0.0, 0.0);
     alSourcef (source, AL_ROLLOFF_FACTOR,  0.0          );
     alSourcei (source, AL_SOURCE_RELATIVE, AL_TRUE      );
-	
+#endif
 	return true;
 }
 
@@ -170,13 +178,14 @@ bool OpenALMusicPlayer::initSource()
 
 bool OpenALMusicPlayer::check()
 {
+#if HAVE_AL
 	int error = alGetError();
 
 	if(error != AL_NO_ERROR) {
 		GfError("OpenALMusicPlayer: OpenAL error was raised: %d\n", error);
 		return false;
 	}
-
+#endif
 	return true;
 }
 
@@ -185,16 +194,21 @@ bool OpenALMusicPlayer::check()
 
 bool OpenALMusicPlayer::isPlaying()
 {
+#if HAVE_AL
     ALenum state;
 	
     alGetSourcei(source, AL_SOURCE_STATE, &state);    
     return (state == AL_PLAYING);
+#else
+	return false;
+#endif
 }
 
 
 
 bool OpenALMusicPlayer::streamBuffer(ALuint buffer)
 {
+#if HAVE_AL
 	char pcm[BUFFERSIZE];
 	int size = 0;
 	const char* error = '\0';
@@ -219,6 +233,9 @@ bool OpenALMusicPlayer::streamBuffer(ALuint buffer)
 		alBufferData(buffer, format, pcm, size, stream->getRateInHz());
 		return check();
 	}
+#else
+	return false;
+#endif
 }
 
 
@@ -226,7 +243,9 @@ bool OpenALMusicPlayer::streamBuffer(ALuint buffer)
 
 void OpenALMusicPlayer::start()
 {
-	if (!ready) {
+#if HAVE_AL
+	if (!ready) 
+	{
 		if (stream->getSoundFormat() == SoundStream::FORMAT_INVALID) {
 			GfError("OpenALMusicPlayer: Sound stream has invalid format\n");
 			return;
@@ -239,6 +258,7 @@ void OpenALMusicPlayer::start()
 		
 		return;
 	}
+#endif
 }
 
 
@@ -246,7 +266,9 @@ void OpenALMusicPlayer::start()
 
 void OpenALMusicPlayer::rewind()
 {
+#if HAVE_AL
 	stream->rewind();
+#endif
 }
 
 
@@ -254,6 +276,7 @@ void OpenALMusicPlayer::rewind()
 
 bool OpenALMusicPlayer::playAndManageBuffer()
 {
+#if HAVE_AL
 	if (!ready) {
 		return false;
 	}
@@ -279,7 +302,7 @@ bool OpenALMusicPlayer::playAndManageBuffer()
 			GfError("OpenALMusicPlayer: Cannot play stream.\n");
 		}
 	}
-	
+#endif
 	return true;
 }
 
@@ -288,6 +311,7 @@ bool OpenALMusicPlayer::playAndManageBuffer()
 
 bool OpenALMusicPlayer::startPlayback()
 {
+#if HAVE_AL
     if(isPlaying()) {
         return true;
 	}
@@ -302,6 +326,6 @@ bool OpenALMusicPlayer::startPlayback()
     
     alSourceQueueBuffers(source, 2, buffers);
     alSourcePlay(source);
-    
+#endif
     return true;
 }

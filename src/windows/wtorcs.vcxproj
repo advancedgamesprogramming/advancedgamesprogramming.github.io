@@ -143,7 +143,7 @@ copy dll\libvorbisfile.dll $(SolutionDir)runtime
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>txml.lib;tgf.lib;client.lib;robottools.lib;legacy_stdio_definitions.lib;client.lib;txml.lib;libpng15_vs2008_32.lib;tgf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>txml.lib;tgf.lib;robottools.lib;legacy_stdio_definitions.lib;libpng15_vs2008_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug/wtorcs.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../windows/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

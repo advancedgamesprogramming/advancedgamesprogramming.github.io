@@ -102,6 +102,29 @@
 
 #include "windowsspec.h"
 
+
+#if 0
+void __cdecl GfScrInit(int, char * * const)
+{
+
+}
+
+void __cdecl TorcsEntry(void)
+{
+
+}
+
+void __cdecl ReRunRaceOnConsole(char const *)
+{
+
+}
+#endif
+
+
+
+
+
+
 static void
 init_args(int argc, char **argv, const char** raceconfig)
 {
@@ -199,13 +222,16 @@ main(int argc, char *argv[])
 	init_args(argc, argv, &raceconfig);
 	WindowsSpecInit();			/* init specific windows functions */
 
-	if (strlen(raceconfig) == 0) {
+	if (strlen(raceconfig) == 0) 
+	{
 		GfScrInit(argc, argv);	/* init screen */
 		TorcsEntry();			/* launch TORCS */
 #if HAVE_GL
 		glutMainLoop();			/* event loop of glut */
 #endif
-	} else {
+	} 
+	else 
+	{
 		// Run race from console, no Window, no OpenGL/OpenAL etc.
 		// Thought for blind scripted AI training
 		ReRunRaceOnConsole(raceconfig);
