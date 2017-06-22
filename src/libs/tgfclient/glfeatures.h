@@ -64,12 +64,18 @@
 #ifndef _GRFEATURES_H_
 #define _GRFEATURES_H_
 
+#include <config.h>
+
 #ifdef WIN32
 #include <windows.h>
+#if HAVE_GL
 #include <GL/gl.h>
 #include <GL/glext.h>
+#endif
 #else
+#if HAVE_GL
 #include <GL/gl.h>
+#endif
 #endif // WIN32
 
 #include <tgfclient.h>

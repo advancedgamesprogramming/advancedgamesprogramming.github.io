@@ -248,7 +248,8 @@ grSGIHeader::grSGIHeader(const char *fname, ssgTextureInfo* info)
 
 bool grMakeMipMaps (GLubyte *image, int xsize, int ysize, int zsize, bool mipmap)
 {
-	if (!((xsize & (xsize-1))==0) || !((ysize & (ysize-1))==0)) {
+	if (!((xsize & (xsize-1))==0) || !((ysize & (ysize-1))==0)) 
+	{
 		ulSetError ( UL_WARNING, "Map is not a power-of-two in size!" ) ;
     	return false ;
 	}
@@ -321,14 +322,18 @@ bool grMakeMipMaps (GLubyte *image, int xsize, int ysize, int zsize, bool mipmap
 
 	texels[lev + 1] = NULL;
 
+#if HAVE_GL
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glHint(GL_TEXTURE_COMPRESSION_HINT_ARB, GL_NICEST);
+#endif
 	int map_level = 0;
 
 	GLint ww;
 
-	GLint textureTargetFormat;
-	if (isCompressARBEnabled()) {
+	GLint textureTargetFormat = 0;
+#if HAVE_GL
+	if (isCompressARBEnabled()) 
+	{
 		//printf("COMPRESSOR: ");
 
 		switch (zsize) {
@@ -349,18 +354,23 @@ bool grMakeMipMaps (GLubyte *image, int xsize, int ysize, int zsize, bool mipmap
 				//printf("GL_COMPRESSED_RGBA_ARB\n");
 				break;
 		}
-	} else {
+	} 
+	else 
+	{
 		textureTargetFormat = zsize;
 		//printf("NON COMPRESSOR\n");
 	}
-
+#endif
 	int tlimit = getUserTextureMaxSize();
 
 	do {
-		if (xsize > tlimit || ysize > tlimit) {
+		if (xsize > tlimit || ysize > tlimit) 
+		{
 			ww = 0;
-		} else {
-
+		} 
+		else 
+		{
+#if HAVE_GL
 			glTexImage2D(GL_PROXY_TEXTURE_2D, map_level, textureTargetFormat, xsize, ysize, FALSE /* Border */,
 									(zsize==1)?GL_LUMINANCE:
 									(zsize==2)?GL_LUMINANCE_ALPHA:
@@ -369,6 +379,7 @@ bool grMakeMipMaps (GLubyte *image, int xsize, int ysize, int zsize, bool mipmap
 									GL_UNSIGNED_BYTE, NULL);
 
 			glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &ww);
+#endif
 		}
 
 		if (ww == 0) {
@@ -397,7 +408,9 @@ bool grMakeMipMaps (GLubyte *image, int xsize, int ysize, int zsize, bool mipmap
 			h = 1;
 		}
 
-		if (mipmap == TRUE || i == 0) {
+#if HAVE_GL
+		if (mipmap == TRUE || i == 0) 
+		{
 			glTexImage2D  ( GL_TEXTURE_2D,
 						map_level, textureTargetFormat, w, h, FALSE /* Border */,
 								(zsize==1)?GL_LUMINANCE:
@@ -416,7 +429,7 @@ bool grMakeMipMaps (GLubyte *image, int xsize, int ysize, int zsize, bool mipmap
 				printf("not compressed\n");
 			}*/
 		}
-
+#endif
 		map_level++ ;
 		delete [] texels[i];
 	}

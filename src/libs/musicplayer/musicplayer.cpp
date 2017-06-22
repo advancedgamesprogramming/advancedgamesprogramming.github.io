@@ -112,8 +112,11 @@ static void playMenuMusic(int /* value */)
 	const int nextcallinms = 100;
 	
 	OpenALMusicPlayer* player = getMusicPlayer();
-	if (player->playAndManageBuffer()) {
+	if (player->playAndManageBuffer()) 
+	{
+#if HAVE_GL
 		glutTimerFunc(nextcallinms, playMenuMusic, 0);
+#endif
 	}
 }
 

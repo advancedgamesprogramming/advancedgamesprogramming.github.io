@@ -57,19 +57,27 @@
 #ifndef _GRMAIN_H_
 #define _GRMAIN_H_
 
+#include <config.h>
+
 #include <plib/ssg.h>
 #include <raceman.h>
 
 #ifdef WIN32
 #include <windows.h>
+
+#if HAVE_GL
 #include <GL/gl.h>
 #include <GL/glext.h>
+#endif
 
+
+#if HAVE_GL
 ////// Multitexturing Info
 extern PFNGLMULTITEXCOORD2FARBPROC glMultiTexCoord2fARB ;
 extern PFNGLMULTITEXCOORD2FVARBPROC glMultiTexCoord2fvARB;
 extern PFNGLACTIVETEXTUREARBPROC   glActiveTextureARB ;
 extern PFNGLCLIENTACTIVETEXTUREARBPROC glClientActiveTextureARB ;
+#endif
 
 extern bool InStr(char *searchStr, char *str);
 #endif

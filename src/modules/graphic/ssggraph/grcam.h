@@ -56,6 +56,8 @@
 #ifndef _GRCAM_H_
 #define _GRCAM_H_
 
+#include <config.h>
+
 #include <track.h>
 #include <car.h>
 #include <raceman.h>
@@ -282,8 +284,11 @@ class cGrCarCamMirror : public cGrPerspCamera
 		    float myfogstart = 1400.0, float myfogend = 1500.0)
 	: cGrPerspCamera(myscreen, id, drawCurr, 1, drawBG, 1,
 			 myfovy, myfovymin, myfovymax,
-			 myfnear, myffar, myfogstart, myfogend) {
+			 myfnear, myffar, myfogstart, myfogend) 
+	{
+#if HAVE_GL
 	glGenTextures (1, &tex);
+#endif
 	limitFov();
 	viewCam = NULL;
     }

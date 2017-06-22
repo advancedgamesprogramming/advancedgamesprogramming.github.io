@@ -60,6 +60,8 @@
 	game just the texture needs to be redrawn.
 */
 
+#include <config.h>
+
 #include "grtrackmap.h"
 #include <tgfclient.h>
 
@@ -238,6 +240,7 @@ cGrTrackMap::cGrTrackMap()
 
 		isinitalized = true;
 
+#if HAVE_GL
 		// Now we are ready to render the track into the framebuffer (backbuffer).
 		// Clear the framebuffer (backbuffer), make it "transparent" (alpha = 0.0).
 		glFinish();
@@ -254,7 +257,7 @@ cGrTrackMap::cGrTrackMap()
         glLoadIdentity();
         gluOrtho2D(0.0, grWinw, 0.0, grWinh);
 		glMatrixMode(GL_MODELVIEW);
-
+#endif
 		// Now draw the track as quad strip. The reason for that is that drawing with
 		// glEnable(GL_LINE_SMOOTH) and glHint(GL_LINE_SMOOTH_HINT, GL_NICEST) caused problems
 		// with the alpha channel.
@@ -262,7 +265,9 @@ cGrTrackMap::cGrTrackMap()
 		bool firstvert = true;
 		float xf1, yf1 , xf2, yf2;
 		xf1 = yf1 = xf2 = yf2 = 0.0;
+#if HAVE_GL
 		glBegin(GL_QUAD_STRIP);
+#endif
 		seg = first;
 		do {
 			if (seg->type == TR_STR) {
@@ -293,8 +298,10 @@ cGrTrackMap::cGrTrackMap()
 					xf2 = x2;
 					yf2 = y2;
 				}
+#if HAVE_GL
 				glVertex2f(x1, y1);
 				glVertex2f(x2, y2);
+#endif
 			} else {
 				// To draw the turns correct we subdivide them again, like above.
 				float curseglen = 0.0;
@@ -326,8 +333,10 @@ cGrTrackMap::cGrTrackMap()
 					float y2 = (y - yn*halflinewidth);
 
 					if (seg->type == TR_LFT) {
+#if HAVE_GL
 						glVertex2f(x1, y1);
 						glVertex2f(x2, y2);
+#endif
 						if (firstvert) {
 							firstvert = false;
 							xf1 = x1;
@@ -336,8 +345,10 @@ cGrTrackMap::cGrTrackMap()
 							yf2 = y2;
 						}
 					} else {
+#if HAVE_GL
 						glVertex2f(x2, y2);
 						glVertex2f(x1, y1);
+#endif
 						if (firstvert) {
 							firstvert = false;
 							xf1 = x2;
@@ -354,26 +365,33 @@ cGrTrackMap::cGrTrackMap()
 			seg = seg->next;
 		} while (seg != first);
 
-		if (!firstvert) {
+		if (!firstvert) 
+		{
+#if HAVE_GL
 			glVertex2f(xf1, yf1);
 			glVertex2f(xf2, yf2);
+#endif
 		}
+#if HAVE_GL
 		glEnd();
+#endif
 
 		// Read track picture into memory to be able to generate mipmaps. I read back an RGBA
 		// image because I don't know yet what people want to add to the map, so RGBA is most
 		// flexible to add things like start line, elevation coloring etc.
 		// Do not use GL_ALPHA or GL_LUMINANCE to save memory, somehow this leads to a
 		// performance penalty (at least on NVidia cards).
+#if HAVE_GL
 		GLuint *trackImage = (GLuint*) malloc(texturesize*texturesize*sizeof(GLuint));
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 		glReadBuffer(GL_BACK);
 		glReadPixels(0, 0, texturesize, texturesize, GL_RGBA, GL_BYTE, trackImage);
-
+#endif
 		// Check if the color buffer has alpha, if not fix the texture. Black gets
 		// replaced by transparent black, so don't draw black in the texture, you
 		// won't see anything.
+#if HAVE_GL
 		if (glutGet(GLUT_WINDOW_ALPHA_SIZE) == 0) {
 			// There is no alpha, so we fix it manually. Because we added a little border
 			// around the track map the first pixel should always contain the
@@ -421,15 +439,19 @@ cGrTrackMap::cGrTrackMap()
 
 		// Free the memory of the initial texture.
 		free(trackImage);
+#endif
 
 		// Init the position and size of the map in the window.
 		map_x = -10;
 		map_y = -40;
 		map_size = 170;
 
+#if HAVE_GL
 		// Restore some state.
 		glPopMatrix();
+#endif
 
+#if HAVE_GL
 		// Compile the car "dot" display list.
 		cardot = glGenLists(1);
 		if (cardot != 0) {
@@ -451,6 +473,7 @@ cGrTrackMap::cGrTrackMap()
 
 		// Clear the screen, that in case of a delay the track is not visible.
 		glClear(GL_COLOR_BUFFER_BIT);
+#endif
 	}
 }
 
@@ -460,10 +483,14 @@ cGrTrackMap::~cGrTrackMap()
 {
 	// We have just one track texture object, so delete it just once.
 	if (isinitalized) {
+#if HAVE_GL
 		glDeleteTextures(1, &mapTexture);
+#endif
 		isinitalized = false;
 		if (cardot != 0) {
+#if HAVE_GL
 			glDeleteLists(cardot, 1);
+#endif
 		}
 	}
 }
@@ -497,12 +524,14 @@ void cGrTrackMap::display(
 	int x = Winx + Winw + map_x - (int) (map_size*track_x_ratio);
 	int y = Winy + Winh + map_y - (int) (map_size*track_y_ratio);
 
+#if HAVE_GL
 	// Setup and display track map.
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glBindTexture(GL_TEXTURE_2D, mapTexture);
+#endif
 
 	// Draw track.
 	if (viewmode & (TRACK_MAP_NORMAL | TRACK_MAP_NORMAL_WITH_OPPONENTS)) {
@@ -527,12 +556,14 @@ void cGrTrackMap::display(
 // Draw the track full visible and static.
 void cGrTrackMap::drawTrackNormal(int x, int y)
 {
+#if HAVE_GL
 	glBegin(GL_QUADS);
     glTexCoord2f(0.0, 0.0); glVertex2f(x, y);
     glTexCoord2f(1.0, 0.0); glVertex2f(x + map_size, y);
     glTexCoord2f(1.0, 1.0); glVertex2f(x + map_size, y + map_size);
     glTexCoord2f(0.0, 1.0); glVertex2f(x, y + map_size);
 	glEnd();
+#endif
 }
 
 
@@ -557,6 +588,7 @@ void cGrTrackMap::drawTrackPanning(
 	// Draw track.
 	int x = Winx + Winw + map_x - map_size;
 	int y = Winy + Winh + map_y - map_size;
+#if HAVE_GL
 	glBegin(GL_QUADS);
     glTexCoord2f(x1, y1); glVertex2f(x, y);
     glTexCoord2f(x2, y1); glVertex2f(x + map_size, y);
@@ -567,6 +599,7 @@ void cGrTrackMap::drawTrackPanning(
 	// Draw car "dots".
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
+#endif
 
 	if (viewmode & TRACK_MAP_PAN_WITH_OPPONENTS) {
 		int i;
@@ -575,10 +608,17 @@ void cGrTrackMap::drawTrackPanning(
 				!(s->cars[i]->_state &
 				(RM_CAR_STATE_DNF | RM_CAR_STATE_PULLUP | RM_CAR_STATE_PULLSIDE | RM_CAR_STATE_PULLDN)))
 			{
-				if (s->cars[i]->race.pos > currentCar->race.pos) {
+				if (s->cars[i]->race.pos > currentCar->race.pos) 
+				{
+#if HAVE_GL
 					glColor4fv(behindCarColor);
-				} else {
+#endif
+				} 
+				else 
+				{
+#if HAVE_GL
 					glColor4fv(aheadCarColor);
+#endif
 				}
 				float xc = s->cars[i]->_pos_X - currentCar->_pos_X;
 				float yc = s->cars[i]->_pos_Y - currentCar->_pos_Y;
@@ -586,17 +626,20 @@ void cGrTrackMap::drawTrackPanning(
 					xc = xc/radius*map_size;
 					yc = yc/radius*map_size;
 
+#if HAVE_GL
 					glPushMatrix();
 					glTranslatef(x + (xc + map_size)/2.0, y + (yc + map_size)/2.0, 0.0);
 					float factor = tracksize/(2.0*radius);
 		        	glScalef(factor, factor, 1.0);
 					glCallList(cardot);
 					glPopMatrix();
+#endif
 				}
 			}
 		}
 	}
 
+#if HAVE_GL
 	glColor4fv(currentCarColor);
 	if (cardot != 0) {
 		glMatrixMode(GL_MODELVIEW);
@@ -607,6 +650,7 @@ void cGrTrackMap::drawTrackPanning(
 		glCallList(cardot);
 		glPopMatrix();
 	}
+#endif
 }
 
 
@@ -623,6 +667,7 @@ void cGrTrackMap::drawTrackPanningAligned(
 	float tracksize = MAX(track_width, track_height);
 	float radius = MIN(500.0, tracksize/2.0);
 
+#if HAVE_GL
 	float x = Winx + Winw + map_x - map_size;
 	float y = Winy + Winh + map_y - map_size;
 	glMatrixMode(GL_TEXTURE);
@@ -689,12 +734,14 @@ void cGrTrackMap::drawTrackPanningAligned(
 		glCallList(cardot);
 		glPopMatrix();
 	}
+#endif
 }
 
 
 // Draw the dot of the car.
 void cGrTrackMap::drawCar(tCarElt *currentCar, GLfloat* color, int x, int y)
 {
+#if HAVE_GL
 	// Compute screen coordinates of the car.
 	float car_x = (currentCar->_pos_X - track_min_x)/track_width*map_size*track_x_ratio + x;
 	float car_y = (currentCar->_pos_Y - track_min_y)/track_height*map_size*track_y_ratio + y;
@@ -710,6 +757,7 @@ void cGrTrackMap::drawCar(tCarElt *currentCar, GLfloat* color, int x, int y)
 		glCallList(cardot);
 		glPopMatrix();
 	}
+#endif
 }
 
 

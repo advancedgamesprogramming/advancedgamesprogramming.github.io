@@ -60,6 +60,8 @@
     @ingroup	gui
 */
 
+#include <config.h>
+
 #include <stdlib.h>
 #ifdef WIN32
 #include <windows.h>
@@ -158,6 +160,7 @@ gfuiDrawImage(tGfuiObject *obj)
 
     image = &(obj->u.image);
 
+#if HAVE_GL
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glBindTexture(GL_TEXTURE_2D, image->texture);
@@ -173,4 +176,5 @@ gfuiDrawImage(tGfuiObject *obj)
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
+#endif
 }

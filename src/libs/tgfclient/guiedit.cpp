@@ -60,6 +60,8 @@
     @ingroup	gui
 */
 
+#include <config.h>
+
 #include <stdlib.h>
 #ifdef WIN32
 #include <windows.h>
@@ -214,6 +216,7 @@ gfuiDrawEditbox(tGfuiObject *obj)
 	bgColor = editbox->bgColor[editbox->state];
     }
 
+#if HAVE_GL
     glColor4fv(bgColor);
     glBegin(GL_QUADS);
     glVertex2i(obj->xmin, obj->ymin);
@@ -230,19 +233,24 @@ gfuiDrawEditbox(tGfuiObject *obj)
     glVertex2i(obj->xmax, obj->ymin);
     glVertex2i(obj->xmin, obj->ymin);
     glEnd();	
-    
+#endif
+
+
     label = &(editbox->label);
-    glColor4fv(fgColor);
+#if HAVE_GL
+	glColor4fv(fgColor);
     gfuiPrintString(label->x, label->y, label->font, label->text);
     
-    if ((obj->state != GFUI_DISABLE) && (obj->focus)) {
+    if ((obj->state != GFUI_DISABLE) && (obj->focus)) 
+	{
 	/* draw cursor */
 	glColor3fv(editbox->cursorColor[editbox->state]);
 	glBegin(GL_LINES);
 	glVertex2i(editbox->cursorx, editbox->cursory1);
 	glVertex2i(editbox->cursorx, editbox->cursory2);
 	glEnd();
-    }
+	}
+#endif
 }
 
 

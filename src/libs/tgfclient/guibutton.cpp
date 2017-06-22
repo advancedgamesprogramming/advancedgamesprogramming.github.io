@@ -60,6 +60,8 @@
     @ingroup	gui
 */
 
+#include <config.h>
+
 #include <stdlib.h>
 #ifdef WIN32
 #include <windows.h>
@@ -463,7 +465,9 @@ gfuiDrawButton(tGfuiObject *obj)
 		fgColor = button->fgColor[button->state];
 		bgColor = button->bgColor[button->state];
 	}
-	if (bgColor[3] != 0.0) {
+	if (bgColor[3] != 0.0) 
+	{
+#if HAVE_GL
 		glColor4fv(bgColor);
 		glBegin(GL_QUADS);
 		glVertex2i(obj->xmin, obj->ymin);
@@ -479,9 +483,12 @@ gfuiDrawButton(tGfuiObject *obj)
 		glVertex2i(obj->xmax, obj->ymin);
 		glVertex2i(obj->xmin, obj->ymin);
 		glEnd();	
+#endif
 	}
 	label = &(button->label);
+#if HAVE_GL
 	glColor4fv(fgColor);
+#endif
 	gfuiPrintString(label->x, label->y, label->font, label->text);
 }
 
@@ -503,9 +510,11 @@ gfuiDrawGrButton(tGfuiObject *obj)
 	img = button->enabled;
     }
     GfScrGetSize(&sw, &sh, &vw, &vh);
+#if HAVE_GL
     glRasterPos2i(obj->xmin, obj->ymin);
     glPixelZoom((float)vw / (float)GfuiScreen->width, (float)vh / (float)GfuiScreen->height);
     glDrawPixels(button->width, button->height, GL_RGBA, GL_UNSIGNED_BYTE, img);
+#endif
 }
 
 void

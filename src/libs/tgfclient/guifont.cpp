@@ -55,6 +55,8 @@
 /* This font manipulation is based on Brad Fish's glFont format and code.  */
 /* http://www.netxs.net/bfish/news.html                                    */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -201,6 +203,7 @@ GfuiFontClass::GfuiFontClass(char *FileName)
 
 	fclose(Input);
 
+#if HAVE_GL
 	//Save texture number
 	glGenTextures(1, &Tex);
 	font->Tex = Tex;
@@ -216,7 +219,7 @@ GfuiFontClass::GfuiFontClass(char *FileName)
 	glTexImage2D(GL_TEXTURE_2D, 0, 2, font->TexWidth,
 		 font->TexHeight, 0, GL_LUMINANCE_ALPHA,
 		 GL_UNSIGNED_BYTE, (void *)TexBytes);
-
+#endif
 	//Clean up
 	free(TexBytes);
 
@@ -227,8 +230,11 @@ GfuiFontClass::GfuiFontClass(char *FileName)
 
 GfuiFontClass::~GfuiFontClass()
 {
-	if (font) {
+	if (font) 
+	{
+#if HAVE_GL
 		glDeleteTextures(1, &font->Tex);
+#endif
 		free(font->Char);
 		free(font);
 	}
@@ -295,9 +301,11 @@ void GfuiFontClass::output(int X, int Y, const char* text)
 	//Get length of string
 	Length = strlen(text);
 
+#if HAVE_GL
 	//Begin rendering quads
 	glBindTexture(GL_TEXTURE_2D, font->Tex);
 	glBegin(GL_QUADS);
+#endif
 
 	//Loop through characters
 	for (i = 0; i < Length; i++)
@@ -305,6 +313,7 @@ void GfuiFontClass::output(int X, int Y, const char* text)
 		//Get pointer to glFont character
 		Char = &font->Char[(int)text[i] - font->IntStart];
 
+#if HAVE_GL
 		//Specify vertices and texture coordinates
 		glTexCoord2f(Char->tx1, Char->ty1);
 		glVertex2f(x, y + Char->dy * size);
@@ -314,11 +323,13 @@ void GfuiFontClass::output(int X, int Y, const char* text)
 		glVertex2f(x + Char->dx * size, y);
 		glTexCoord2f(Char->tx2, Char->ty1);
 		glVertex2f(x + Char->dx * size, y + Char->dy * size);
-
+#endif
 		//Move to next character
 		x += Char->dx*size;
 	}
 
+#if HAVE_GL
 	//Stop rendering quads
 	glEnd();
+#endif
 }

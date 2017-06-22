@@ -60,6 +60,8 @@
     @ingroup	img		
 */
 
+#include <config.h>
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -315,8 +317,11 @@ GfImgWritePng(unsigned char *img, const char *filename, int width, int height)
 void
 GfImgFreeTex(GLuint tex)
 {
-	if (tex != 0) {
+	if (tex != 0) 
+	{
+#if HAVE_GL
 		glDeleteTextures(1, &tex);
+#endif
 	}
 }
 
@@ -346,12 +351,13 @@ GfImgReadTex(char *filename)
 		return 0;
 	}
 
+#if HAVE_GL
 	glGenTextures(1, &retTex);
 	glBindTexture(GL_TEXTURE_2D, retTex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)(tex));
-
+#endif
 	free(tex);
 
 	GfParmReleaseHandle(handle);

@@ -52,6 +52,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <config.h>
+
 #include <plib/ssg.h>
 #include "grmultitexstate.h"
 
@@ -62,7 +64,9 @@
 
 void grMultiTexState::apply (int unit)
 {
-  if (unit==0) {
+#if HAVE_GL
+  if (unit==0) 
+  {
       glActiveTextureARB ( GL_TEXTURE0_ARB ) ;
       glEnable ( GL_TEXTURE_2D ) ;  /* Enables the second texture map. */
       glBindTexture ( GL_TEXTURE_2D, ssgSimpleState::getTextureHandle() ) ;
@@ -85,4 +89,5 @@ void grMultiTexState::apply (int unit)
       glBindTexture ( GL_TEXTURE_2D, getTextureHandle() ) ;
       _ssgCurrentContext->getState()->setTexture ( getTexture () ) ;  
   }
+#endif
 }

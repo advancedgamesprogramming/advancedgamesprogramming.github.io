@@ -2318,14 +2318,17 @@ public:
 
   void setup ()
   {
+#if HAVE_GL
     if ( is_turned_on )
     {
+
       glEnable  ( (GLenum)(GL_LIGHT0+id) ) ;
       glLightfv ( (GLenum)(GL_LIGHT0+id), GL_AMBIENT , ambient  ) ;
       glLightfv ( (GLenum)(GL_LIGHT0+id), GL_DIFFUSE , diffuse  ) ;
       glLightfv ( (GLenum)(GL_LIGHT0+id), GL_SPECULAR, specular ) ;
       glLightfv ( (GLenum)(GL_LIGHT0+id), GL_POSITION, position ) ;
-      if ( isSpotlight() ) {
+      if ( isSpotlight() ) 
+	  {
 	 glLightfv ( (GLenum)(GL_LIGHT0+id), GL_SPOT_DIRECTION, direction ) ;
 	 glLightf  ( (GLenum)(GL_LIGHT0+id), GL_SPOT_EXPONENT,  exponent  ) ;
 	 glLightf  ( (GLenum)(GL_LIGHT0+id), GL_SPOT_CUTOFF,    cutoff    ) ;
@@ -2336,6 +2339,7 @@ public:
     }
     else
       glDisable ( (GLenum)(GL_LIGHT0+id) ) ;
+#endif
   }
 
 } ;
@@ -2436,9 +2440,10 @@ public:
       return ;
 
     cullFace = on_off ;
-
+#if HAVE_GL
     if ( cullFace ) glEnable  ( GL_CULL_FACE ) ;
-               else glDisable ( GL_CULL_FACE ) ;
+	else glDisable ( GL_CULL_FACE ) ;
+#endif
   }
 
   ssgState *overriddenState () { return ovState ; }

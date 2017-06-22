@@ -113,11 +113,13 @@ tdble grLodFactorValue = 1.0;
 EWheelDetail grUseDetailedWheels = DETAILED;
 
 #ifdef WIN32
+#if HAVE_GL
 #include <GL/glext.h>
 PFNGLMULTITEXCOORD2FARBPROC glMultiTexCoord2fARB = NULL;
 PFNGLMULTITEXCOORD2FVARBPROC glMultiTexCoord2fvARB = NULL;
 PFNGLACTIVETEXTUREARBPROC glActiveTextureARB = NULL;
 PFNGLCLIENTACTIVETEXTUREARBPROC glClientActiveTextureARB = NULL;
+#endif
 #endif
 
 
@@ -132,10 +134,14 @@ bool InitMultiTex(void)
 		// list of available extensions
 		char *extensionStr = (char*)glGetString(GL_EXTENSIONS);
 		if (extensionStr == NULL)
+		{
 			return false;
+		}
 
-		if (strstr(extensionStr, "GL_ARB_multitexture")) {
+		if (strstr(extensionStr, "GL_ARB_multitexture")) 
+		{
 			// retrieve the maximum number of texture units allowed
+#if HAVE_GL
 			glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &maxTextureUnits);
 #ifdef WIN32
 			// retrieve addresses of multitexturing functions
@@ -143,6 +149,7 @@ bool InitMultiTex(void)
 			glActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress("glActiveTextureARB");
 			glClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress("glClientActiveTextureARB");
 			glMultiTexCoord2fvARB = (PFNGLMULTITEXCOORD2FVARBPROC) wglGetProcAddress("glMultiTexCoord2fvARB");
+#endif
 #endif
 			return true;
 		} else {

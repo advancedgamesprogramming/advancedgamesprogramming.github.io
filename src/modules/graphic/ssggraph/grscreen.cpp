@@ -59,6 +59,8 @@
     @version	$Id: grscreen.cpp,v 1.22.2.5 2012/06/09 11:44:46 berniw Exp $
 */
 
+#include <config.h>
+
 #include <plib/ssg.h>
 
 #include <tgfclient.h>
@@ -294,7 +296,7 @@ comparCars(const void *car1, const void *car2)
 void cGrScreen::camDraw(tSituation *s)
 {
 	int i;
-	
+#if HAVE_GL
 	glDisable(GL_COLOR_MATERIAL);
 	
 	START_PROFILE("dispCam->update*");
@@ -332,6 +334,7 @@ void cGrScreen::camDraw(tSituation *s)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	grDrawScene();
 	STOP_PROFILE("grDrawScene*");
+#endif
 }
 
 

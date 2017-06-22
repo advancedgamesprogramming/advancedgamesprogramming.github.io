@@ -59,6 +59,8 @@
     @ingroup	gui
 */
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -114,8 +116,11 @@ gfuiColorInit(void)
 	GfParmReleaseHandle(hdle);
 	
 	/* Remove the X11/Windows cursor  */
-	if (!GfuiMouseHW) {
+	if (!GfuiMouseHW) 
+	{
+#if HAVE_GL
 		glutSetCursor(GLUT_CURSOR_NONE);
+#endif
 	}
 	
 	GfuiMouseVisible = 1;
@@ -156,11 +161,14 @@ GfuiIdle(void)
 	if ((curtime - LastTimeClick) > DelayRepeat) {
 		DelayRepeat = REPEAT2;
 		LastTimeClick = curtime;
-		if (GfuiScreen->mouse == 1) {
+		if (GfuiScreen->mouse == 1) 
+		{
 			/* button down */
 			gfuiUpdateFocus();
 			gfuiMouseAction((void*)0);
+#if HAVE_GL
 			glutPostRedisplay();
+#endif
 		}
 	}
 }
@@ -173,6 +181,7 @@ GfuiDisplay(void)
 {
 	tGfuiObject	*curObj;
 	
+#if HAVE_GL
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_TEXTURE_2D);
@@ -180,9 +189,10 @@ GfuiDisplay(void)
 	glDisable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
+#endif
+
 	GfScrGetSize(&ScrW, &ScrH, &ViewW, &ViewH);
-	
+#if HAVE_GL
 	glViewport((ScrW-ViewW) / 2, (ScrH-ViewH) / 2, ViewW, ViewH);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -231,7 +241,9 @@ GfuiDisplay(void)
 		glDisable(GL_TEXTURE_2D);
 		glEnable(GL_BLEND);
 	}
-	
+#endif
+
+
 	curObj = GfuiScreen->objects;
 	if (curObj) {
 		do {
@@ -244,8 +256,10 @@ GfuiDisplay(void)
 		GfuiDrawCursor();
 	}
 
+#if HAVE_GL
 	glDisable(GL_BLEND);
 	glutSwapBuffers();
+#endif
 }
 
 /** Hide the mouse cursor
@@ -282,10 +296,12 @@ GfuiMouseSetHWPresent(void)
 static void
 gfuiKeyboard(unsigned char key, int /* x */, int /* y */)
 {
+#if HAVE_GL
 	tGfuiKey	*curKey;
 	int		modifier;
 	tGfuiObject	*obj;
 	
+
 	modifier = glutGetModifiers();
 	
 	/* user preempt key */
@@ -314,11 +330,13 @@ gfuiKeyboard(unsigned char key, int /* x */, int /* y */)
 		}
 	}
 	glutPostRedisplay();
+#endif
 }
 
 static void
 gfuiSpecial(int key, int /* x */, int /* y */)
 {
+#if HAVE_GL
 	tGfuiKey	*curKey;
 	int		modifier;
 	tGfuiObject	*obj;
@@ -351,11 +369,13 @@ gfuiSpecial(int key, int /* x */, int /* y */)
 		}
 	}
 	glutPostRedisplay();
+#endif
 }
 
 static void
 gfuiKeyboardUp(unsigned char key, int /* x */, int /* y */)
 {
+#if HAVE_GL
 	tGfuiKey	*curKey;
 	int		modifier;
 	
@@ -379,11 +399,13 @@ gfuiKeyboardUp(unsigned char key, int /* x */, int /* y */)
 	}
 	
 	glutPostRedisplay();
+#endif
 }
 
 static void
 gfuiSpecialUp(int key, int /* x */, int /* y */)
 {
+#if HAVE_GL
 	tGfuiKey	*curKey;
 	int		modifier;
 	
@@ -407,6 +429,7 @@ gfuiSpecialUp(int key, int /* x */, int /* y */)
 	}
 	
 	glutPostRedisplay();
+#endif
 }
 
 /** Get the mouse information (position and buttons)
@@ -426,13 +449,16 @@ tMouseInfo *GfuiMouseInfo(void)
 */
 void GfuiMouseSetPos(int x, int y)
 {
+#if HAVE_GL
 	glutWarpPointer(x, y);
+#endif
 }
 
 
 static void
 gfuiMouse(int button, int state, int x, int y)
 {
+#if HAVE_GL
 	// Check array range of button array!
 	if (button > -1 && button < 3) {
 		GfuiMouse.X = (x - (ScrW - ViewW)/2) * (int)GfuiScreen->width / ViewW;
@@ -461,6 +487,7 @@ gfuiMouse(int button, int state, int x, int y)
 		}
 		glutPostRedisplay();
 	}
+#endif
 }
 
 static void
@@ -470,7 +497,9 @@ gfuiMotion(int x, int y)
 	GfuiMouse.Y = (ViewH - y + (ScrH - ViewH)/2) * (int)GfuiScreen->height / ViewH;
 	gfuiUpdateFocus();
 	gfuiMouseAction((void*)(1 - GfuiScreen->mouse));
+#if HAVE_GL
 	glutPostRedisplay();
+#endif
 	DelayRepeat = REPEAT1;
 }
 
@@ -480,7 +509,9 @@ gfuiPassiveMotion(int x, int y)
 	GfuiMouse.X = (x - (ScrW - ViewW)/2) * (int)GfuiScreen->width / ViewW;
 	GfuiMouse.Y = (ViewH - y + (ScrH - ViewH)/2) * (int)GfuiScreen->height / ViewH;
 	gfuiUpdateFocus();
+#if HAVE_GL
 	glutPostRedisplay();
+#endif
 }
 
 /** Tell if the screen is active or not.
@@ -505,7 +536,7 @@ GfuiScreenActivate(void *screen)
 	if ((GfuiScreen) && (GfuiScreen->onDeactivate)) GfuiScreen->onDeactivate(GfuiScreen->userDeactData);
 	
 	GfuiScreen = (tGfuiScreen*)screen;
-	
+#if HAVE_GL
 	glutKeyboardFunc(gfuiKeyboard);
 	glutSpecialFunc(gfuiSpecial);
 	glutKeyboardUpFunc(gfuiKeyboardUp);
@@ -530,6 +561,7 @@ GfuiScreenActivate(void *screen)
 		GfuiDisplay();
 		glutPostRedisplay();
 	}
+#endif
 }
 
 
@@ -559,6 +591,7 @@ GfuiScreenDeactivate(void)
 	
 	GfuiScreen = (tGfuiScreen*)NULL;
 	
+#if HAVE_GL
 	glutKeyboardFunc((void(*)(unsigned char,int,int))NULL);
 	glutSpecialFunc((void(*)(int,int,int))NULL);
 	glutKeyboardUpFunc((void(*)(unsigned char,int,int))NULL);
@@ -568,6 +601,7 @@ GfuiScreenDeactivate(void)
 	glutPassiveMotionFunc((void(*)(int,int))NULL);
 	glutIdleFunc((void(*)(void))NULL);
 	glutDisplayFunc(GfuiDisplayNothing);
+#endif
 }
 
 /** Create a new screen.
@@ -663,9 +697,12 @@ GfuiScreenRelease(void *scr)
 		GfuiScreenDeactivate();
 	}
 
-	if (glIsTexture(screen->bgImage) == GL_TRUE) {
+#if HAVE_GL
+	if (glIsTexture(screen->bgImage) == GL_TRUE) 
+	{
 		glDeleteTextures(1, &screen->bgImage);
 	}
+#endif
 
 	if (screen->bgColor != NULL) {
 		free(screen->bgColor);
@@ -966,11 +1003,14 @@ GfuiScreenShot(void * /* notused */)
 			return;
 		}
 		
+#if HAVE_GL
 		glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 		glReadBuffer(GL_FRONT);
 		glReadPixels((sw-vw)/2, (sh-vh)/2, vw, vh, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)img);
-		
+#endif
+
+
 		t = time(NULL);
 		stm = localtime(&t);
 		snprintf(buf, BUFSIZE, "%s/torcs-%4d%02d%02d%02d%02d%02d.png",
@@ -1004,9 +1044,11 @@ GfuiScreenAddBgImg(void *scr, const char *filename)
 	const int BUFSIZE = 1024;
 	char buf[BUFSIZE];
 	
+#if HAVE_GL
 	if (glIsTexture(screen->bgImage) == GL_TRUE) {
 		glDeleteTextures(1, &screen->bgImage);
 	}
+#endif
 
 	snprintf(buf, BUFSIZE, "%s%s", GetLocalDir(), GFSCR_CONF_FILE);
 	handle = GfParmReadFile(buf, GFPARM_RMODE_STD | GFPARM_RMODE_CREAT);
@@ -1017,6 +1059,7 @@ GfuiScreenAddBgImg(void *scr, const char *filename)
 		return;
 	}
 
+#if HAVE_GL
 	glGenTextures(1, &screen->bgImage);
 	glBindTexture(GL_TEXTURE_2D, screen->bgImage);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -1024,6 +1067,7 @@ GfuiScreenAddBgImg(void *scr, const char *filename)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)(tex));
 	free(tex);
 	GfParmReleaseHandle(handle);
+#endif
 }
 
 

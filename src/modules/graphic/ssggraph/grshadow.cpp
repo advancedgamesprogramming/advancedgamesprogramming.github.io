@@ -52,6 +52,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <config.h>
+
 #include <plib/ssg.h>
 #include "grshadow.h"
 
@@ -124,6 +126,7 @@ void ssgVtxTableShadow::draw_geometry ()
   sgVec2 *tx = (sgVec2 *) texcoords -> get(0) ;
   sgVec4 *cl = (sgVec4 *) colours   -> get(0) ;
 
+#if HAVE_GL
   glDepthMask(GL_FALSE);
   glPolygonOffset(-15.0f, -20.0f);
   glEnable(GL_POLYGON_OFFSET_FILL);
@@ -147,4 +150,5 @@ void ssgVtxTableShadow::draw_geometry ()
   glEnd () ;
   glDisable(GL_POLYGON_OFFSET_FILL);
   glDepthMask(GL_TRUE);
+#endif
 }

@@ -53,6 +53,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -325,7 +327,9 @@ class cGrCarCamInside : public cGrPerspCamera
 /* MIRROR */
 cGrCarCamMirror::~cGrCarCamMirror ()
 {
+#if HAVE_GL
     glDeleteTextures (1, &tex);
+#endif
     delete viewCam;
 }
 
@@ -395,6 +399,7 @@ void cGrCarCamMirror::setPos (int x, int y, int w, int h)
 		th *= 2;
 	}
 
+#if HAVE_GL
     // Create texture object.
     glBindTexture(GL_TEXTURE_2D, tex);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -406,7 +411,7 @@ void cGrCarCamMirror::setPos (int x, int y, int w, int h)
 		      GL_RGB, // internal format,
 		      0, 0, tw, th,
 		      0 ); // border
-
+#endif
     tsu = (float) mw / tw;
     teu = 0.0;
     tsv = 0.0;
@@ -425,6 +430,7 @@ void cGrCarCamMirror::activateViewport (void)
 
 void cGrCarCamMirror::store (void)
 {
+#if HAVE_GL
 	glDisable(GL_SCISSOR_TEST);
 
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -434,6 +440,7 @@ void cGrCarCamMirror::store (void)
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
 			    vpx + (vpw - mw)/2,
 			    vpy + (vph - mh)/2, mw, mh);
+#endif
 }
 
 
@@ -441,6 +448,7 @@ void cGrCarCamMirror::display (void)
 {
     viewCam->action ();
 
+#if HAVE_GL
     glBindTexture (GL_TEXTURE_2D, tex);
     glBegin(GL_TRIANGLE_STRIP);
     {
@@ -451,6 +459,7 @@ void cGrCarCamMirror::display (void)
 	glTexCoord2f(teu, tev); glVertex2f(mx + mw, my + mh);
     }
     glEnd();
+#endif
 }
 
 

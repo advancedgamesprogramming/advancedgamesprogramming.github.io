@@ -53,6 +53,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -179,10 +180,15 @@ static void Idle2(void)
 			if (((b & mask) != 0) && ((rawb[index] & mask) == 0)) {
 				/* Button fired */
 				JoyCalAutomaton();
-				if (CalState >= NB_STEPS) {
+				if (CalState >= NB_STEPS) 
+				{
+#if HAVE_GL
 					glutIdleFunc(GfuiIdle);
+#endif
 				}
+#if HAVE_GL
 				glutPostRedisplay();
+#endif
 				rawb[index] = b;
 				return;
 			}
@@ -201,10 +207,14 @@ static void onActivate(void * /* dummy */)
 
 	CalState = 0;
 	GfuiLabelSetText(scrHandle2, InstId, Instructions[CalState]);
+#if HAVE_GL
 	glutIdleFunc(Idle2);
 	glutPostRedisplay();
-	for (index = 0; index < NUM_JOY; index++) {
-		if (js[index]) {
+#endif
+	for (index = 0; index < NUM_JOY; index++) 
+	{
+		if (js[index]) 
+		{
 			js[index]->read(&rawb[index], &ax[index * _JS_MAX_AXES]); /* initial value */
 		}
 	}

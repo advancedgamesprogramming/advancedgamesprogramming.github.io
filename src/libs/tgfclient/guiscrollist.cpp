@@ -60,6 +60,8 @@
     @ingroup	gui
 */
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #ifdef WIN32
@@ -574,7 +576,7 @@ gfuiDrawScrollist(tGfuiObject *obj)
 
 	fgColor = scrollist->fgColor[0];
 	bgColor = scrollist->bgColor[0];
-
+#if HAVE_GL
 	if(bgColor[3] != 0.0) {
 		glBegin(GL_QUADS);
 		glColor4fv(bgColor);
@@ -593,7 +595,7 @@ gfuiDrawScrollist(tGfuiObject *obj)
 	glVertex2i(obj->xmax, obj->ymin);
 	glVertex2i(obj->xmin, obj->ymin);
 	glEnd();
-
+#endif
 
 	h = scrollist->font->getDescender() + scrollist->font->getHeight();
 	x = obj->xmin;
@@ -618,12 +620,14 @@ gfuiDrawScrollist(tGfuiObject *obj)
 				continue;
 			}
 
-			if(index == scrollist->selectedElt) {
+#if HAVE_GL
+			if(index == scrollist->selectedElt) 
+			{
 				glColor4fv(scrollist->fgSelectColor[0]);
 			} else {
 				glColor4fv(scrollist->fgColor[0]);
 			}
-
+#endif
 			index++;
 
 			if(index > (scrollist->firstVisible + scrollist->nbVisible)) {

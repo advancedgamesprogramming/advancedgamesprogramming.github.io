@@ -59,6 +59,8 @@
     @version	$Id: raceengine.cpp,v 1.19.2.22 2014/04/15 09:34:17 berniw Exp $
 */
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <tgfclient.h>
@@ -727,11 +729,12 @@ reCapture(void)
 		return;
 	}
 
+#if HAVE_GL
 	glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	glReadBuffer(GL_FRONT);
 	glReadPixels((sw-vw)/2, (sh-vh)/2, vw, vh, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)img);
-
+#endif
 	snprintf(buf, BUFSIZE, "%s/torcs-%4.4d-%8.8d.png", capture->outputBase, capture->currentCapture, capture->currentFrame++);
 	GfImgWritePng(img, buf, vw, vh);
 	free(img);
@@ -767,7 +770,9 @@ ReUpdate(void)
 			
 			GfuiDisplay();
 			ReInfo->_reGraphicItf.refresh(ReInfo->s);
+#if HAVE_GL
 			glutPostRedisplay();	/* Callback -> reDisplay */
+#endif
 			break;
 
 		case RM_DISP_MODE_NONE:
@@ -779,12 +784,15 @@ ReUpdate(void)
 			}
 
 			GfuiDisplay();
+#if HAVE_GL
 			glutPostRedisplay();	/* Callback -> reDisplay */
+#endif
 			break;
 
 		case RM_DISP_MODE_CAPTURE:
 			capture = &(ReInfo->movieCapture);
-			while ((ReInfo->_reCurTime - capture->lastFrame) < capture->deltaFrame) {
+			while ((ReInfo->_reCurTime - capture->lastFrame) < capture->deltaFrame) 
+			{
 				ReOneStep(capture->deltaSimu);
 			}
 			capture->lastFrame = ReInfo->_reCurTime;
@@ -792,7 +800,9 @@ ReUpdate(void)
 			GfuiDisplay();
 			ReInfo->_reGraphicItf.refresh(ReInfo->s);
 			reCapture();
+#if HAVE_GL
 			glutPostRedisplay();	/* Callback -> reDisplay */
+#endif
 			break;
 
 		case RM_DISP_MODE_CONSOLE:

@@ -53,6 +53,8 @@
  ***************************************************************************/
 
 
+#include <config.h>
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -67,6 +69,7 @@ gfuiObjectInit(void)
 void 
 gfuiPrintString(int x, int y, GfuiFontClass *font, const char *string)
 {
+#if HAVE_GL
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glEnable(GL_ALPHA_TEST);
@@ -74,10 +77,12 @@ gfuiPrintString(int x, int y, GfuiFontClass *font, const char *string)
     font->output(x, y, string);
     glDisable(GL_ALPHA_TEST);
     glDisable(GL_TEXTURE_2D);
+#endif
 }
 
 void GfuiPrintString(const char *text, float *fgColor, int font, int x, int y, int align)
 {
+#if HAVE_GL
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glEnable(GL_ALPHA_TEST);
@@ -96,6 +101,7 @@ void GfuiPrintString(const char *text, float *fgColor, int font, int x, int y, i
 	}
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_TEXTURE_2D);
+#endif
 }
 
 int GfuiFontHeight(int font)
@@ -116,6 +122,7 @@ GfuiDrawCursor()
 
 #define SCALE 1.3
     
+#if HAVE_GL
     glColor4fv(GfuiScreen->mouseColor[0]) ;
     glBegin(GL_TRIANGLES);
     glVertex2f(xf, yf);
@@ -143,7 +150,7 @@ GfuiDrawCursor()
     glVertex2f(xf + 12.8 * SCALE, yf - 12 * SCALE);
     glVertex2f(xf + 12.4 * SCALE, yf - 12.4 * SCALE);  
     glEnd();
-
+#endif
 }
 
 void

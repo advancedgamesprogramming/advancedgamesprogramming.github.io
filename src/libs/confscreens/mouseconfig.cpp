@@ -59,6 +59,8 @@
     @version	$Id: mouseconfig.cpp,v 1.5.2.4 2012/02/16 15:09:01 berniw Exp $
 */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -144,10 +146,17 @@ MouseCalAutomaton(void)
 	CalState++;
 	CalState = GetNextAxis();
 	GfuiLabelSetText(scrHandle2, InstId, Instructions[CalState]);
-	if (CalState < 4) {
+	if (CalState < 4) 
+	{
+#if HAVE_GL
 		glutIdleFunc(Idle2);
-	} else {
+#endif
+	} 
+	else 
+	{
+#if HAVE_GL
 		glutIdleFunc(GfuiIdle);
+#endif
 	}
 }
 
@@ -174,7 +183,9 @@ IdleMouseInit(void)
 	memset(&mouseInfo, 0, sizeof(mouseInfo));
 	GfctrlMouseGetCurrent(&mouseInfo);
 	GfctrlMouseInitCenter();
+#if HAVE_GL
 	glutIdleFunc(Idle2);
+#endif
 }
 
 static void
@@ -186,8 +197,11 @@ onActivate2(void * /* dummy */)
 	CalState = 0;
 	GetNextAxis();
 	GfuiLabelSetText(scrHandle2, InstId, Instructions[CalState]);
-	if (CalState < 4) {
+	if (CalState < 4) 
+	{
+#if HAVE_GL
 		glutIdleFunc(IdleMouseInit);
+#endif
 		GfctrlMouseCenter();
 	}
 }

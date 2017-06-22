@@ -57,11 +57,23 @@
 #ifndef _GRUTIL_H_
 #define _GRUTIL_H_
 
+#include <config.h>
+
 #include <stdio.h>
 #include "grtexture.h"
 
 #if 1
-#define TRACE_GL(msg) { GLenum rc; if ((rc = glGetError()) != GL_NO_ERROR) printf("%s %s\n", msg, gluErrorString(rc)); }
+#if HAVE_GL
+#define TRACE_GL(msg)									\
+	{													\
+		GLenum rc;										\
+		if ((rc = glGetError()) != GL_NO_ERROR)			\
+		printf("%s %s\n", msg, gluErrorString(rc));     \
+	}
+#else
+#define TRACE_GL(msg)
+#endif // HAVE_GL
+
 #else
 #define TRACE_GL(msg)
 #endif

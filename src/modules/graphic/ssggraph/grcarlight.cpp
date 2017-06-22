@@ -165,6 +165,7 @@ void ssgVtxTableCarlight::draw_geometry ()
 	}
 
 	alpha = 0.75f;
+#if HAVE_GL
 	glDepthMask(GL_FALSE);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
@@ -172,7 +173,7 @@ void ssgVtxTableCarlight::draw_geometry ()
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	// get the matrix.
 	glGetFloatv(GL_MODELVIEW_MATRIX, modelView);
-
+#endif
 	// get the up and right vector from the matrice view.
 	up[0] = modelView[1];
 	up[1] = modelView[5];
@@ -207,10 +208,14 @@ void ssgVtxTableCarlight::draw_geometry ()
 	axis[1] = 0;
 	axis[2] = 1;
 
-	if (maxTextureUnits > 1) {
+	if (maxTextureUnits > 1) 
+	{
+#if HAVE_GL
 		glActiveTextureARB (GL_TEXTURE0_ARB);
+#endif
 	}
 
+#if HAVE_GL
 	sgMakeRotMat4(mat, ((float)rand()/(float)RAND_MAX)*45, axis);
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity ();
@@ -223,7 +228,8 @@ void ssgVtxTableCarlight::draw_geometry ()
 
 	glBegin(gltype) ;
 	glColor4f(0.8, 0.8, 0.8, alpha);
-	if (num_normals == 1) {
+	if (num_normals == 1) 
+	{
 		glNormal3fv(nm[0]);
 	}
 	// the computed coordinates are translated from the smoke position with the x,y,z speed.
@@ -251,6 +257,7 @@ void ssgVtxTableCarlight::draw_geometry ()
 	glMatrixMode(GL_MODELVIEW);
 
 	glDepthMask(GL_TRUE);
+#endif
 }
 
 

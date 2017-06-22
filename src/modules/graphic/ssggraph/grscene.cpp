@@ -354,7 +354,9 @@ initBackground(void)
     grMipMap = 0;
 
     graphic = &grTrack->graphic;
+#if HAVE_GL
     glClearColor(graphic->bgColor[0], graphic->bgColor[1], graphic->bgColor[2], 1.0);
+#endif
 
     TheBackground = new ssgRoot();
     clr[0] = clr[1] = clr[2] = 1.0;
@@ -397,12 +399,15 @@ initBackground(void)
 	    tex[1] = 1.0;
 	    bg_tex->add(tex);
 	}
+
+#if HAVE_GL
 	bg = new ssgVtxTable(GL_TRIANGLE_STRIP, bg_vtx, bg_nrm, bg_tex, bg_clr);
 	bg_st = (ssgSimpleState*)grSsgLoadTexState(graphic->background);
 	bg_st->disable(GL_LIGHTING);
 	bg->setState(bg_st);
 	bg->setCullFace(0);
 	TheBackground->addKid(bg);
+#endif
 	break;
 
     case 2:
@@ -437,12 +442,14 @@ initBackground(void)
 	    tex[1] = 0.5;
 	    bg_tex->add(tex);
 	}
+#if HAVE_GL
 	bg = new ssgVtxTable(GL_TRIANGLE_STRIP, bg_vtx, bg_nrm, bg_tex, bg_clr);
 	bg_st = (ssgSimpleState*)grSsgLoadTexState(graphic->background);
 	bg_st->disable(GL_LIGHTING);
 	bg->setState(bg_st);
 	bg->setCullFace(0);
 	TheBackground->addKid(bg);
+#endif
 
 	bg_vtx = new ssgVertexArray(NB_BG_FACES + 1);
 	bg_tex = new ssgTexCoordArray(NB_BG_FACES + 1);
@@ -475,13 +482,14 @@ initBackground(void)
 	    tex[1] = 1.0;
 	    bg_tex->add(tex);
 	}
+#if HAVE_GL
 	bg = new ssgVtxTable(GL_TRIANGLE_STRIP, bg_vtx, bg_nrm, bg_tex, bg_clr);
 	bg_st = (ssgSimpleState*)grSsgLoadTexState(graphic->background);
 	bg_st->disable(GL_LIGHTING);
 	bg->setState(bg_st);
 	bg->setCullFace(0);
 	TheBackground->addKid(bg);
-
+#endif
 	bg_vtx = new ssgVertexArray(NB_BG_FACES + 1);
 	bg_tex = new ssgTexCoordArray(NB_BG_FACES + 1);
 	bg_clr = new ssgColourArray(1);
@@ -513,12 +521,14 @@ initBackground(void)
 	    tex[1] = 0.5;
 	    bg_tex->add(tex);
 	}
+#if HAVE_GL
 	bg = new ssgVtxTable(GL_TRIANGLE_STRIP, bg_vtx, bg_nrm, bg_tex, bg_clr);
 	bg_st = (ssgSimpleState*)grSsgLoadTexState(graphic->background);
 	bg_st->disable(GL_LIGHTING);
 	bg->setState(bg_st);
 	bg->setCullFace(0);
 	TheBackground->addKid(bg);
+#endif
 
 	bg_vtx = new ssgVertexArray(NB_BG_FACES + 1);
 	bg_tex = new ssgTexCoordArray(NB_BG_FACES + 1);
@@ -551,12 +561,15 @@ initBackground(void)
 	    tex[1] = 1.0;
 	    bg_tex->add(tex);
 	}
+
+#if HAVE_GL
 	bg = new ssgVtxTable(GL_TRIANGLE_STRIP, bg_vtx, bg_nrm, bg_tex, bg_clr);
 	bg_st = (ssgSimpleState*)grSsgLoadTexState(graphic->background);
 	bg_st->disable(GL_LIGHTING);
 	bg->setState(bg_st);
 	bg->setCullFace(0);
 	TheBackground->addKid(bg);
+#endif
 
 	break;
 
@@ -596,12 +609,15 @@ initBackground(void)
 	    tex[1] = 1.0;
 	    bg_tex->add(tex);
 	}
+
+#if HAVE_GL
 	bg = new ssgVtxTable(GL_TRIANGLE_STRIP, bg_vtx, bg_nrm, bg_tex, bg_clr);
 	bg_st = (ssgSimpleState*)grSsgLoadTexState(graphic->background);
 	bg_st->disable(GL_LIGHTING);
 	bg->setState(bg_st);
 	bg->setCullFace(0);
 	TheBackground->addKid(bg);
+#endif
 	break;
 
     default:
@@ -609,6 +625,7 @@ initBackground(void)
     }
 
     /* Environment Mapping Settings */
+#if HAVE_GL
     grEnvSelector = new ssgStateSelector(graphic->envnb);
     for (i = 0; i < graphic->envnb; i++) {
       GfOut("Loading Environment Mapping Image %s\n", graphic->env[i]);
@@ -643,6 +660,7 @@ initBackground(void)
 	} else {
 		grEnvShadowStateOnCars->ref();
 	}
+#endif
 }
 
 

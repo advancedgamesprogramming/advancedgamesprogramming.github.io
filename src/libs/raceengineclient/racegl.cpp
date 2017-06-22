@@ -58,6 +58,9 @@
     @author	<a href=mailto:eric.espie@torcs.org>Eric Espie</a>
     @version	$Id: racegl.cpp,v 1.7.2.4 2013/09/01 10:24:23 berniw Exp $
 */
+
+#include <config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -91,12 +94,17 @@ reDisplay(void)
 static void
 reScreenActivate(void * /* dummy */)
 {
+#if HAVE_GL
     glutDisplayFunc(reDisplay);
+#endif
 
-    if ((ReInfo->s->_raceState & RM_RACE_PAUSED) == 0) {
+    if ((ReInfo->s->_raceState & RM_RACE_PAUSED) == 0) 
+	{
 	ReStart(); 			/* resynchro */
     }
-    glutPostRedisplay();
+#if HAVE_GL
+	glutPostRedisplay();
+#endif
 }
 
 static void
@@ -313,9 +321,13 @@ reAddResKeys(void)
 static void
 reResScreenActivate(void * /* dummy */)
 {
+#if HAVE_GL
     glutDisplayFunc(reDisplay);
-    GfuiDisplay();
-    glutPostRedisplay();
+#endif
+	GfuiDisplay();
+#if HAVE_GL
+	glutPostRedisplay();
+#endif
 }
 
 
@@ -323,7 +335,9 @@ static void
 reContDisplay(void)
 {
     GfuiDisplay();
+#if HAVE_GL
     glutPostRedisplay();
+#endif
 }
 
 
@@ -473,7 +487,9 @@ ReResShowCont(void)
     GfuiAddKey(reResScreenHdle, 13,  "Continue", 0, reResCont, NULL);
     GfuiAddKey(reResScreenHdle, 27,  "Continue", 0, reResCont, NULL);
 
+#if HAVE_GL
     glutDisplayFunc(reContDisplay);
     glutPostRedisplay();
+#endif
 }
 

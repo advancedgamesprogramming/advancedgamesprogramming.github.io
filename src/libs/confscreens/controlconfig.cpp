@@ -59,6 +59,7 @@
     @version	$Id: controlconfig.cpp,v 1.5.2.8 2014/02/14 10:48:27 berniw Exp $
 */
 
+#include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -260,7 +261,9 @@ onKeyAction(unsigned char key, int /* modifier */, int state)
 		GfParmSetStr(PrefHdle, CurrentSection, CurrentCmd->name, name);
 	}
 	
+#if HAVE_GL
 	glutIdleFunc(GfuiIdle);
+#endif
 	InputWaited = 0;
 	updateButtonText();
 	return 1;
@@ -281,7 +284,9 @@ onSKeyAction(int key, int /* modifier */, int state)
 	CurrentCmd->ref.type = GFCTRL_TYPE_SKEYBOARD;
 	GfParmSetStr(PrefHdle, CurrentSection, CurrentCmd->name, name);
 	
+#if HAVE_GL
 	glutIdleFunc(GfuiIdle);
+#endif
 	InputWaited = 0;
 	updateButtonText();
 	return 1;
@@ -317,29 +322,41 @@ Idle(void)
 	GfctrlMouseGetCurrent(&mouseInfo);
 	
 	/* Check for a mouse button pressed */
-	for (i = 0; i < 3; i++) {
-		if (mouseInfo.edgedn[i]) {
+	for (i = 0; i < 3; i++) 
+	{
+		if (mouseInfo.edgedn[i]) 
+		{
+#if HAVE_GL
 			glutIdleFunc(GfuiIdle);
+#endif
 			InputWaited = 0;
 			str = GfctrlGetNameByRef(GFCTRL_TYPE_MOUSE_BUT, i);
 			CurrentCmd->ref.index = i;
 			CurrentCmd->ref.type = GFCTRL_TYPE_MOUSE_BUT;
 			GfuiButtonSetText (scrHandle, CurrentCmd->Id, str);
+#if HAVE_GL
 			glutPostRedisplay();
+#endif
 			return;
 		}
 	}
 	
 	/* Check for a mouse axis moved */
-	for (i = 0; i < 4; i++) {
-		if (mouseInfo.ax[i] > 20.0) {
+	for (i = 0; i < 4; i++) 
+	{
+		if (mouseInfo.ax[i] > 20.0) 
+		{
+#if HAVE_GL
 			glutIdleFunc(GfuiIdle);
+#endif
 			InputWaited = 0;
 			str = GfctrlGetNameByRef(GFCTRL_TYPE_MOUSE_AXIS, i);
 			CurrentCmd->ref.index = i;
 			CurrentCmd->ref.type = GFCTRL_TYPE_MOUSE_AXIS;
 			GfuiButtonSetText (scrHandle, CurrentCmd->Id, str);
+#if HAVE_GL
 			glutPostRedisplay();
+#endif
 			return;
 		}
 	}
@@ -353,13 +370,17 @@ Idle(void)
 			for (i = 0, mask = 1; i < 32; i++, mask *= 2) {
 				if (((b & mask) != 0) && ((rawb[index] & mask) == 0)) {
 					/* Button i fired */
+#if HAVE_GL
 					glutIdleFunc(GfuiIdle);
+#endif
 					InputWaited = 0;
 					str = GfctrlGetNameByRef(GFCTRL_TYPE_JOY_BUT, i + 32 * index);
 					CurrentCmd->ref.index = i + 32 * index;
 					CurrentCmd->ref.type = GFCTRL_TYPE_JOY_BUT;
 					GfuiButtonSetText (scrHandle, CurrentCmd->Id, str);
+#if HAVE_GL
 					glutPostRedisplay();
+#endif
 					rawb[index] = b;
 					return;
 				}
@@ -370,14 +391,19 @@ Idle(void)
 
 	/* detect joystick movement */
 	axis = getMovedAxis();
-	if (axis != -1) {
+	if (axis != -1) 
+	{
+#if HAVE_GL
 		glutIdleFunc(GfuiIdle);
+#endif
 		InputWaited = 0;
 		CurrentCmd->ref.type = GFCTRL_TYPE_JOY_AXIS;
 		CurrentCmd->ref.index = axis;
 		str = GfctrlGetNameByRef(GFCTRL_TYPE_JOY_AXIS, axis);
 		GfuiButtonSetText (scrHandle, CurrentCmd->Id, str);
+#if HAVE_GL
 		glutPostRedisplay();
+#endif
 		return;
 	}
 }
@@ -398,7 +424,9 @@ onPush(void *vi)
 		InputWaited = 1;
 	}
 	
+#if HAVE_GL
 	glutIdleFunc(Idle);
+#endif
 	GfctrlMouseInitCenter();
 	memset(&mouseInfo, 0, sizeof(mouseInfo));
 	GfctrlMouseGetCurrent(&mouseInfo);

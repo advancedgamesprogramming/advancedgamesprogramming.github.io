@@ -62,6 +62,8 @@
 	to another part eventually.
 */
 
+#include <config.h>
+
 #include <glfeatures.h>
 #include <portability.h>
 
@@ -82,10 +84,14 @@ void checkCompressARBAvailable(bool &result)
 	// driver problems and not a bugfix. According to the specification OpenGL should
 	// choose an uncompressed alternate format if it can't provide the requested
 	// compressed one... but it does not on all cards/drivers.
-	if (compressARB) {
-		int numformats;
+	if (compressARB) 
+	{
+		int numformats = 0;
+#if HAVE_GL
 		glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS_ARB, &numformats);
-		if (numformats == 0) {
+#endif
+		if (numformats == 0) 
+		{
 			compressARB = 0;
 		}
 	}
@@ -146,7 +152,10 @@ static int userTextureMaxSize;
 
 void getGLTextureMaxSize(int &result)
 {
+	result = 512;
+#if HAVE_GL
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &result);
+#endif
 	if (result > 16384) {
 		result = 16384;
 	}

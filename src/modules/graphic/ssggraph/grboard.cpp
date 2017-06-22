@@ -53,6 +53,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <config.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -213,6 +214,8 @@ cGrBoard::grDispGGraph(tCarElt *car)
 
 	X2 = -car->_DynGC.acc.y / 9.81f * 25.0f + X1;
 	Y2 = car->_DynGC.acc.x / 9.81f * 25.0f + Y1;
+
+#if HAVE_GL
 	glBegin(GL_LINES);
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glVertex2f(X1-50, Y1);
@@ -222,9 +225,11 @@ cGrBoard::grDispGGraph(tCarElt *car)
 	glVertex2f(xc, yc);
 	glVertex2f(xc, yc+100);
 	glEnd();
+#endif
 
 	const tdble THNSS = 2.0f;
 
+#if HAVE_GL
 	glBegin(GL_QUADS);
 	glColor4f(0.0, 0.0, 1.0, 1.0);
 	glVertex2f(X1 - THNSS, Y1);
@@ -254,6 +259,7 @@ cGrBoard::grDispGGraph(tCarElt *car)
 	glVertex2f(X1, Y1);
 	glVertex2f(X2, Y2);
 	glEnd();
+#endif
 }
 
 
@@ -268,6 +274,8 @@ cGrBoard::grDrawGauge(tdble X1, tdble Y1, tdble H, float *clr1, float *clr2, tdb
 	
 #define THNSSBG	2.0
 #define THNSSFG	2.0
+
+#if HAVE_GL
 	glBegin(GL_QUADS);
 	glColor4fv(grBlack);
 	glVertex2f(X1 - (THNSSBG + THNSSFG), Y1 - THNSSBG);
@@ -287,6 +295,7 @@ cGrBoard::grDrawGauge(tdble X1, tdble Y1, tdble H, float *clr1, float *clr2, tdb
 	glVertex2f(X1 + THNSSFG, Y1 + curH);
 	glVertex2f(X1 - THNSSFG, Y1 + curH);
 	glEnd();
+#endif
 	GfuiPrintString(title, grBlue, GFUI_FONT_MEDIUM, (int)X1, (int)(Y1 - THNSSBG - GfuiFontHeight(GFUI_FONT_MEDIUM)), GFUI_ALIGN_HC_VB);
 }
 
@@ -325,6 +334,7 @@ cGrBoard::grDispCarBoard1(tCarElt *car, tSituation *s)
 	dx = GfuiFontWidth(GFUI_FONT_MEDIUM_C, buf);
 	dx = MAX(dx, (x2-x));
 	
+#if HAVE_GL
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) ;
 	glBegin(GL_QUADS);
@@ -335,7 +345,8 @@ cGrBoard::grDispCarBoard1(tCarElt *car, tSituation *s)
 	glVertex2f(x-5, y-5 - dy2 * 9 /* lines */);
 	glEnd();
 	glDisable(GL_BLEND);
-	
+#endif
+
 	GfuiPrintString(buf, grCarInfo[car->index].iconColor, GFUI_FONT_MEDIUM_C, x, y, GFUI_ALIGN_HL_VB);
 	y -= dy;
 	
@@ -425,6 +436,8 @@ cGrBoard::grDispCarBoard2(tCarElt *car, tSituation *s)
 		}
 	}
 	
+
+#if HAVE_GL
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) ;
 	glBegin(GL_QUADS);
@@ -435,7 +448,8 @@ cGrBoard::grDispCarBoard2(tCarElt *car, tSituation *s)
 	glVertex2f(x-5, y-5 - dy2 * lines);
 	glEnd();
 	glDisable(GL_BLEND);
-	
+#endif
+
 	GfuiPrintString(buf, grCarInfo[car->index].iconColor, GFUI_FONT_MEDIUM_C, x, y, GFUI_ALIGN_HL_VB);
 	y -= dy;
 	
@@ -573,6 +587,7 @@ grDispEngineLeds (tCarElt *car, int X, int Y, int align, int bg)
 	}
 
 	y = Y;
+#if HAVE_GL
 	glBegin(GL_QUADS);
 	
 	if (bg) {
@@ -619,6 +634,7 @@ grDispEngineLeds (tCarElt *car, int X, int Y, int align, int bg)
 		}
 	}
 	glEnd();
+#endif
 }
 
 void
@@ -665,6 +681,7 @@ cGrBoard::grDispLeaderBoard(tCarElt *car, tSituation *s)
 	y = Winy + 10;
 	dy = GfuiFontHeight(GFUI_FONT_SMALL_C);
 	
+#if HAVE_GL
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) ;
 	glBegin(GL_QUADS);
@@ -675,7 +692,8 @@ cGrBoard::grDispLeaderBoard(tCarElt *car, tSituation *s)
 	glVertex2f(x, y + dy * (maxi + drawLaps));
 	glEnd();
 	glDisable(GL_BLEND);
-	
+#endif
+
 	if (current + 1 > maxi) {
 		drawCurrent = 1;
 	} else {
@@ -747,6 +765,7 @@ cGrBoard::grDispCounterBoard2(tCarElt *car)
 	index = car->index;	/* current car's index */
 	curInst = &(grCarInfo[index].instrument[0]);
 	
+#if HAVE_GL
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) ;
 	glEnable(GL_TEXTURE_2D);
@@ -758,7 +777,8 @@ cGrBoard::grDispCounterBoard2(tCarElt *car)
 	}
 	glCallList(curInst->CounterList);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	
+#endif
+
 	val = (*(curInst->monitored) - curInst->minValue) / curInst->maxValue;
 	if (val > 1.0) {
 		val = 1.0;
@@ -770,18 +790,21 @@ cGrBoard::grDispCounterBoard2(tCarElt *car)
 	
 	RELAXATION(val, curInst->prevVal, 30);
 	
+#if HAVE_GL
 	glPushMatrix();
 	glTranslatef(curInst->needleXCenter, curInst->needleYCenter, 0);
 	glRotatef(val, 0, 0, 1);
 	glCallList(curInst->needleList);
 	glPopMatrix();
-	
+#endif
+
 	GfuiPrintString((char*)(gearStr[car->_gear+car->_gearOffset]), grRed, GFUI_FONT_LARGE_C,
 			(int)curInst->digitXCenter, (int)(curInst->digitYCenter), GFUI_ALIGN_HC_VB);
 	
 	
 	curInst = &(grCarInfo[index].instrument[1]);
 	
+#if HAVE_GL
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) ;
 	glEnable(GL_TEXTURE_2D);
@@ -789,7 +812,8 @@ cGrBoard::grDispCounterBoard2(tCarElt *car)
 	glBindTexture(GL_TEXTURE_2D, curInst->texture->getTextureHandle());
 	glCallList(curInst->CounterList);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	
+#endif
+
 	val = (*(curInst->monitored) - curInst->minValue) / curInst->maxValue;
 	if (val > 1.0) {
 		val = 1.0;
@@ -800,12 +824,14 @@ cGrBoard::grDispCounterBoard2(tCarElt *car)
 	
 	RELAXATION(val, curInst->prevVal, 30);
 	
+#if HAVE_GL
 	glPushMatrix();
 	glTranslatef(curInst->needleXCenter, curInst->needleYCenter, 0);
 	glRotatef(val, 0, 0, 1);
 	glCallList(curInst->needleList);
 	glPopMatrix();
-	
+#endif
+
 	if (curInst->digital) {
 		// Do not add "%3d" or something, because the digital font DOES NOT SUPPORT BLANKS!!!!
 		snprintf(buf, BUFSIZE, "%d", abs((int)(car->_speed_x * 3.6)));
@@ -963,6 +989,7 @@ void grInitBoardCar(tCarElt *car)
 	curInst->monitored = &(car->_enginerpm);
 	curInst->prevVal = curInst->minAngle;
 	
+#if HAVE_GL
 	curInst->CounterList = glGenLists(1);
 	glNewList(curInst->CounterList, GL_COMPILE);
 	glBegin(GL_TRIANGLE_STRIP);
@@ -975,7 +1002,9 @@ void grInitBoardCar(tCarElt *car)
 	}
 	glEnd();
 	glEndList();
-	
+#endif
+
+#if HAVE_GL
 	curInst->needleList = glGenLists(1);
 	glNewList(curInst->needleList, GL_COMPILE);
 	glBegin(GL_TRIANGLE_STRIP);
@@ -988,7 +1017,7 @@ void grInitBoardCar(tCarElt *car)
 	}
 	glEnd();
 	glEndList();
-	
+#endif
 	
 	/* Speedometer */
 	curInst = &(carInfo->instrument[1]);
@@ -1022,6 +1051,7 @@ void grInitBoardCar(tCarElt *car)
 		curInst->digital = 1;
 	}
 	
+#if HAVE_GL
 	curInst->CounterList = glGenLists(1);
 	glNewList(curInst->CounterList, GL_COMPILE);
 	glBegin(GL_TRIANGLE_STRIP);
@@ -1034,7 +1064,9 @@ void grInitBoardCar(tCarElt *car)
 	}
 	glEnd();
 	glEndList();
-	
+#endif
+
+#if HAVE_GL
 	curInst->needleList = glGenLists(1);
 	glNewList(curInst->needleList, GL_COMPILE);
 	glBegin(GL_TRIANGLE_STRIP);
@@ -1047,7 +1079,7 @@ void grInitBoardCar(tCarElt *car)
 	}
 	glEnd();
 	glEndList();
-	
+#endif
 }
 
 void grShutdownBoardCar(void)
@@ -1056,9 +1088,11 @@ void grShutdownBoardCar(void)
 	for (i = 0; i < grNbCars; i++) {
 		ssgDeRefDelete(grCarInfo[i].instrument[0].texture);	
 		ssgDeRefDelete(grCarInfo[i].instrument[1].texture);
+#if HAVE_GL
 		glDeleteLists(grCarInfo[i].instrument[0].needleList, 1);
 		glDeleteLists(grCarInfo[i].instrument[1].needleList, 1);
 		glDeleteLists(grCarInfo[i].instrument[0].CounterList, 1);
 		glDeleteLists(grCarInfo[i].instrument[1].CounterList, 1);
+#endif
 	}
 }

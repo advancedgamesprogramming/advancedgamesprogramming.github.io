@@ -59,6 +59,7 @@
     @ingroup	gui
 */
 
+#include <config.h>
 #include <stdlib.h>
 #ifdef WIN32
 #include <windows.h>
@@ -298,7 +299,9 @@ gfuiDrawLabel(tGfuiObject *obj)
 	tGfuiLabel	*label;
 
 	label = &(obj->u.label);
-	if (label->bgColor[3] != 0.0) {
+	if (label->bgColor[3] != 0.0) 
+	{
+#if HAVE_GL
 		glColor4fv(label->bgColor);
 		glBegin(GL_QUADS);
 		glVertex2i(obj->xmin, obj->ymin);
@@ -306,8 +309,11 @@ gfuiDrawLabel(tGfuiObject *obj)
 		glVertex2i(obj->xmax, obj->ymax);
 		glVertex2i(obj->xmax, obj->ymin);
 		glEnd();
+#endif
 	}
+#if HAVE_GL
 	glColor4fv(label->fgColor.getRGBA());
+#endif
 	gfuiPrintString(label->x, label->y, label->font, label->text);
 }
 

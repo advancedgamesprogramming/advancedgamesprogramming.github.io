@@ -100,7 +100,9 @@ static int SplashDisplaying;
 static void splashKey( unsigned char /* key */, int /* x */, int /* y */)
 {
 	SplashDisplaying = 0;
+#if HAVE_GL
 	glDeleteTextures(1, &s_texture);
+#endif
 	s_texture = 0;
 	TorcsMainMenuRun();
 }
@@ -125,7 +127,9 @@ static void splashTimer(int /* value */)
 {
 	if (SplashDisplaying) {
 		SplashDisplaying = 0;
+#if HAVE_GL
 		glDeleteTextures(1, &s_texture);
+#endif
 		s_texture = 0;
 		TorcsMainMenuRun();
 	}
@@ -154,20 +158,22 @@ static void splashDisplay( void )
 	
 	SplashDisplaying = 1;
 		
+#if HAVE_GL
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_ALPHA_TEST);
-	
+#endif
 	GfScrGetSize(&ScrW, &ScrH, &ViewW, &ViewH);
 	
+#if HAVE_GL
 	glViewport((ScrW-ViewW) / 2, (ScrH-ViewH) / 2, ViewW, ViewH);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0, ScrW, 0, ScrH);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-		
+#endif
 	if (s_texture != 0) {
 		GLfloat tx1 = 0.0f, tx2 = 1.0f, ty1 = 0.0f, ty2 = 1.0f;
 		
@@ -188,6 +194,7 @@ static void splashDisplay( void )
 			ty2 -= tdy;
 		}
 
+#if HAVE_GL
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, s_texture);
 		glBegin(GL_QUADS);
@@ -197,25 +204,32 @@ static void splashDisplay( void )
 		glTexCoord2f(tx2, ty1); glVertex3f(ScrW, 0.0, 0.0);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
+#endif
 	}
 		
 #ifdef HAVE_CONFIG_H
+#if HAVE_GL
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0, 640, 0, 480);
-	
+#endif
 	static float grWhite[4] = {1.0, 1.0, 1.0, 1.0};
 	GfuiPrintString(VERSION, grWhite, GFUI_FONT_SMALL_C, 640-8, 8, GFUI_ALIGN_HR_VB);
 #endif
 
+#if HAVE_GL
 	glutSwapBuffers();
+#endif
 }
 
 static void splashMouse(int /* b */, int s, int /* x */, int /* y */)
 {
-	if (s == GLUT_UP) {
+	if (s == GLUT_UP) 
+	{
 		SplashDisplaying = 0;
+#if HAVE_GL
 		glDeleteTextures(1, &s_texture);
+#endif
 		s_texture = 0;
 		TorcsMainMenuRun();
 	}
@@ -246,8 +260,11 @@ int SplashScreen(void)
 	const int BUFSIZE = 1024;
 	char buf[BUFSIZE];
 	
-	if (s_texture != 0) {
+	if (s_texture != 0) 
+	{
+#if HAVE_GL
 		glDeleteTextures(1, &s_texture); 
+#endif
 	}
 	
 	snprintf(buf, BUFSIZE, "%s%s", GetLocalDir(), GFSCR_CONF_FILE);
@@ -260,6 +277,7 @@ int SplashScreen(void)
 		return -1;
 	}
 
+#if HAVE_GL
 	glGenTextures(1, &s_texture);
 	glBindTexture(GL_TEXTURE_2D, s_texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -272,7 +290,7 @@ int SplashScreen(void)
 	glutSpecialFunc((void (*)(int key, int x, int y))NULL);
 	glutTimerFunc(7000, splashTimer, 0);
 	glutMouseFunc(splashMouse);
-    
+#endif
 	return 0;
 }
 

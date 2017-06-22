@@ -334,8 +334,10 @@ extern void WindowsSpecInit(void);
 int main(int argc, char **argv)
 {
     init_args(argc, argv);
+#if HAVE_GL
     glutInit(&argc, argv);
     glutCreateWindow(argv[1]);
+#endif
     ssgInit();
     
 #ifndef WIN32

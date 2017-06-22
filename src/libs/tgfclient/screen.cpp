@@ -265,13 +265,14 @@ gfScreenInit(void)
 
 static void Reshape(int width, int height)
 {
+#if HAVE_GL
     glViewport( (width-GfViewWidth)/2, (height-GfViewHeight)/2, GfViewWidth,  GfViewHeight);
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
     glOrtho( 0.0, 640.0, 0.0, 480.0, -1.0, 1.0 );
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
-
+#endif
     GfScrWidth = width;
     GfScrHeight = height;
     GfScrCenX = width / 2;
@@ -323,9 +324,9 @@ void GfScrInit(int argc, char *argv[])
 #endif
 
 	const char* vinit = GfParmGetStr(handle, GFSCR_SECT_PROP, GFSCR_ATT_VINIT, GFSCR_VAL_VINIT_COMPATIBLE);
-
+#if HAVE_GL
     glutInit(&argc, argv);
-
+#endif
 	// Depending on "video mode init" setting try to get the best mode or try to get a mode in a safe way...
 	// This is a workaround for driver/glut/glx bug, which lie about the capabilites of the visual.
 
@@ -338,9 +339,13 @@ void GfScrInit(int argc, char *argv[])
 		bool visualSupportsMultisample = true;
 		bool visualSupportsAlpha = true;
 
+#if HAVE_GL
 		glutInitDisplayString("rgba double depth>=24 samples alpha");
+#endif
 
-		if (!glutGet(GLUT_DISPLAY_MODE_POSSIBLE)) {
+#if HAVE_GL
+		if (!glutGet(GLUT_DISPLAY_MODE_POSSIBLE)) 
+		{
 			// Failed, try without antialiasing support.
 			visualDepthBits = 24;
 			visualSupportsMultisample = false;
@@ -379,10 +384,12 @@ void GfScrInit(int argc, char *argv[])
 			visualSupportsAlpha = false;
 			glutInitDisplayString("rgb double depth>=16");
 		}
+#endif
 
 		printf("Visual Properties Report\n");
 		printf("------------------------\n");
 
+#if HAVE_GL
 		if (!glutGet(GLUT_DISPLAY_MODE_POSSIBLE)) {
 			// All failed.
 			printf("The minimum display requirements are not fulfilled.\n");
@@ -402,21 +409,32 @@ void GfScrInit(int argc, char *argv[])
 				printf("for an alternate driver.\n");
 			}
 		}
-	} else {
+#endif
+
+	} 
+	else 
+	{
 		// Compatibility mode.
+#if HAVE_GL
 		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+#endif
 		printf("Visual Properties Report\n");
 		printf("------------------------\n");
 		printf("Compatibility mode, properties unknown.\n");
 	}
 
 
-	if (strcmp(fscr, GFSCR_VAL_YES) == 0) {
+	if (strcmp(fscr, GFSCR_VAL_YES) == 0) 
+	{
 		for (i = maxfreq; i > 59; i--) {
 			snprintf(buf, BUFSIZE, "%dx%d:%d@%d", winX, winY, depth, i);
+#if HAVE_GL
 			glutGameModeString(buf);
+#endif
 			GfOut("2 - Trying %s mode\n", buf);
-			if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) {
+#if HAVE_GL
+			if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) 
+			{
 				GfOut("2- %s mode Possible\n", buf);
 				glutEnterGameMode();
 				if (glutGameModeGet(GLUT_GAME_MODE_DISPLAY_CHANGED)) {
@@ -428,11 +446,14 @@ void GfScrInit(int argc, char *argv[])
 					glutLeaveGameMode();
 				}
 			}
+#endif
 		}
 	}
 
-	if (!fullscreen) {
+	if (!fullscreen) 
+	{
 	/* Give an initial size and position so user doesn't have to place window */
+#if HAVE_GL
 		glutInitWindowPosition(0, 0);
 		glutInitWindowSize(winX, winY);
 		Window = glutCreateWindow(argv[0]);
@@ -441,16 +462,22 @@ void GfScrInit(int argc, char *argv[])
 			GfScrShutdown();
 			exit(1);
 		}
+#endif
 	}
 
-	if ((strcmp(fscr, GFSCR_VAL_YES) == 0) && (!fullscreen)) {
+	if ((strcmp(fscr, GFSCR_VAL_YES) == 0) && (!fullscreen)) 
+	{
+#if HAVE_GL
 		/* glutVideoResize(0, 0, winX, winY); */
 		glutFullScreen();
+#endif
 	}
 
     GfParmReleaseHandle(handle);
 
+#if HAVE_GL
     glutReshapeFunc( Reshape );
+#endif
 
 	checkGLFeatures();
 }
@@ -461,8 +488,11 @@ void GfScrInit(int argc, char *argv[])
 */
 void GfScrShutdown(void)
 {
-    if (usedGM) {
+    if (usedGM) 
+	{
+#if HAVE_GL
 	glutLeaveGameMode();
+#endif
     }
 #if !defined(FREEGLUT) && !defined(WIN32)
     if (usedFG) {
@@ -963,5 +993,9 @@ GfScrMenuInit(void *precMenu)
 
 int GfuiGlutExtensionSupported(const char *str)
 {
+#if HAVE_GL
     return glutExtensionSupported(str);
+#else
+	return 0;
+#endif
 }

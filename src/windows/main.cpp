@@ -56,6 +56,9 @@
 
 // txml.lib; tgf.lib; client.lib; robottools.lib; legacy_stdio_definitions.lib; client.lib; txml.lib; libpng15_vs2008_32.lib; tgf.lib; % (AdditionalDependencies)
 
+
+#include <config.h>
+
 #pragma comment(lib, "learning.lib")
 #pragma comment(lib, "tita.lib")
 #pragma comment(lib, "track.lib")
@@ -67,8 +70,11 @@
 #pragma comment(lib, "berniw.lib")
 #pragma comment(lib, "human.lib")
 
+#if HAVE_GL
 #pragma comment(lib, "sg.lib")
 #pragma comment(lib, "ssg.lib")
+#endif
+
 #pragma comment(lib, "ul.lib")
 #pragma comment(lib, "zlib1_vs2008_32.lib")
 #pragma comment(lib, "ALut.lib")
@@ -79,7 +85,6 @@
 #pragma comment(lib, "sl.lib")
 
 
-#include <config.h>
 
 #ifdef WIN32
 #include <windows.h>
@@ -197,7 +202,9 @@ main(int argc, char *argv[])
 	if (strlen(raceconfig) == 0) {
 		GfScrInit(argc, argv);	/* init screen */
 		TorcsEntry();			/* launch TORCS */
+#if HAVE_GL
 		glutMainLoop();			/* event loop of glut */
+#endif
 	} else {
 		// Run race from console, no Window, no OpenGL/OpenAL etc.
 		// Thought for blind scripted AI training
